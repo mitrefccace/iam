@@ -8,20 +8,15 @@ Replace the following image files with ACE images after OpenAM is downloaded but
 1. <path_to_openam>/XUI/images/logo-horizontal.png
 1. <path_to_openam>/XUI/images/login-logo.png
 1. <path_to_openam>/XUI/favicon.ico
+1. <path_to_openam>/XUI/themes/dark/images/login-logo-white.png
 
 ### Customize Login Page
 
-#### Login Message
+1. Login Message - Copy DataStore.xml to <path_to_openam>/config/auth/default_en/DataStore.xml
+1. HTML Page Title - Copy index.html to <path_to_openam>/XUI
+1. Footer, image title - Copy ThemeConfiguration.js to <path_to_openam>/XUI/config 
 
-#### HTML Page Title
-
-#### Image Title
-
-#### Footer
-Copy ThemeConfiguration.js to <path_to_openam>/XUI/config.
- 
-
-### Enable Self-Registration
+### Self-Registration
 
 ### Create Realm
 
@@ -34,8 +29,6 @@ Copy ThemeConfiguration.js to <path_to_openam>/XUI/config.
 ### Session Management
 
 ### Dashboard
-
-#### Application
 
 
 ### Enable Knowledge Base Authentication
