@@ -31,9 +31,9 @@ define("config/ThemeConfiguration", {
                     // The URL of the image.
                     src: "images/logo-horizontal.png",
                     // The title attribute used on <img> tags.
-                    title: "ForgeRock",
+                    title: "ACE",
                     // The alt attribute used on <img> tags.
-                    alt: "ForgeRock",
+                    alt: "ACE",
                     // The width of the logo as a CSS length.
                     width: "202px"
                 },
@@ -42,9 +42,9 @@ define("config/ThemeConfiguration", {
                     // The URL of the image.
                     src: "images/login-logo.png",
                     // The title attribute used on <img> tags.
-                    title: "ForgeRock",
+                    title: "ACE",
                     // The alt attribute used on <img> tags.
-                    alt: "ForgeRock",
+                    alt: "ACE",
                     // The height of the logo as a CSS length.
                     height: "204px",
                     // The width of the logo as a CSS length.
@@ -69,8 +69,8 @@ define("config/ThemeConfiguration", {
             settings: {
                 loginLogo: {
                     src: "themes/dark/images/login-logo-white.png",
-                    title: "ForgeRock",
-                    alt: "ForgeRock",
+                    title: "ACE",
+                    alt: "ACE",
                     height: "228px",
                     width: "220px"
                 }
