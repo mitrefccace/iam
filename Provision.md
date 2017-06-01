@@ -36,7 +36,7 @@
 1. Select Global tab.
 1. Click "Dashboard" shown on the page.
 1. Click "New" button to create a new dashboard app.
-1. Enter "MgtPortal" in the id field.
+1. Enter "MgtPortal" in the name field.
 1. Enter the following information:
 	* "MgtPortalClass" in the ClassName field.
 	* "MgtPortal" in the Display Name field.
@@ -102,9 +102,18 @@
 1. Enter "MgtPortal" in the "New Value" field, then click Add.
 1. Click Save.
 
-### Forgot Password and Username
+### Enable Forgot Password and Username
+1. Login as admin, go to configuration->global->user self service
+1. Change min answers to define: 2
+1. Change min answers to verify: 2
+1. Check “enabled” for forgotten password sectio
+1. Check “KBA”
+1. Check "enabled for forgotten username section
+1. Check "KBA"
+1. Save Changes
 
-### Session Management
+
+
 
 
 ### Enable Knowledge Base Authentication
