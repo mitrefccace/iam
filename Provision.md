@@ -102,7 +102,8 @@
 1. Enter "MgtPortal" in the "New Value" field, then click Add.
 1. Click Save.
 
-### Enable Forgot Password and Username
+### Enable Knowledge Base Authentication
+Knowledge Base authenciation allows user to retreive forgotten username and password by answering security questions created by the users. User may select from a list of pre-defined security questions or create new questions. Follow the steps to enable Knowledge Base Authentication:
 1. Login as admin, go to configuration->global->user self service
 1. Change min answers to define: 2
 1. Change min answers to verify: 2
@@ -112,11 +113,6 @@
 1. Check "KBA"
 1. Save Changes
 
-
-
-
-
-### Enable Knowledge Base Authentication
 
 
 
