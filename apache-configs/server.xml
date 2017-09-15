@@ -118,8 +118,8 @@
                 sslImplementationName="org.apache.tomcat.util.net.jsse.JSSEImplementation"
                maxThreads="150"
                 scheme="https" SSLEnabled="true"
-                keystoreFile="xxxxx"
-                keystorePass="xxxxx"
+                keystoreFile="<keystore_location>"
+                keystorePass="<keystore_password>"
                 clientAuth="false" sslProtocol="TLSv1.2"
                 ciphers="TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
         TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
