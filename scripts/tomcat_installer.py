@@ -5,8 +5,6 @@ from time import sleep
 import platform
 import json
 
-__author__ = "AOROURKE"
-__date__ = "$Sep 8, 2017 10:16:19 AM$"
 
 configuration_file = './oam_installer.json'
 
