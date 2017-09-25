@@ -4,8 +4,6 @@ import os.path
 from time import sleep
 import platform
 
-__author__ = "AOROURKE"
-__date__ = "$Sep 8, 2017 10:16:19 AM$"
 
 java_installed_file = './java_installed_output'
 java_version =  'java-1.8.0-openjdk.x86_64' 
