@@ -5,8 +5,6 @@ import subprocess
 import java_installer
 import tomcat_installer
 
-__author__ = "AOROURKE"
-__date__ = "$Sep 8, 2017 10:16:19 AM$"
 
 # ======== Functions =====================
 def grep (filename, pattern, index):
