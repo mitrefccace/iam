@@ -31,7 +31,6 @@ def install(c):
   	subprocess.call ('mkdir /opt/tomcat ', shell=True)
   	subprocess.call ('useradd -s /bin/nologin -g tomcat -d /opt/tomcat tomcat ', shell=True)
   	subprocess.call ('wget http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.81/bin/apache-tomcat-7.0.81.tar.gz', shell=True)
-  #	subprocess.call ('wget http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.81/bin/apache-tomcat-7.0.81.tar.gz ', shell=True)
   	subprocess.call ('tar -zxvf apache-tomcat-7.0.81.tar.gz -C /opt/tomcat --strip-components=1 ', shell=True)
   	subprocess.call ('chgrp -R tomcat /opt/tomcat/conf ', shell=True)
   	subprocess.call ('chmod g+rwx /opt/tomcat/conf ', shell=True)
