@@ -5,6 +5,8 @@ import subprocess
 import java_installer
 import tomcat_installer
 
+__author__ = "AOROURKE"
+__date__ = "$Sep 8, 2017 10:16:19 AM$"
 
 # ======== Functions =====================
 def grep (filename, pattern, index):
@@ -26,18 +28,19 @@ tomcat_installer.install('continue')
 
 # make sure Tomcat is running. Abort if Tomcat is not running
 if not is_service_running('tomcat'):
-	print 'Existing due to Tomcat Error: Tomcat is not running...'
+	print 'Existing: Tomcat is not running...'
 	exit()
+else:
+	print 'Checked: Tomcat service is running...'
 
 # update config file
 print '***  Please UPDATE all entries with the "UPDATE" (8) in the comment and save the changes ***'
 print '... '
-sleep (5)
-call (["vim", "+40", "/root/iam/iam-configs/config.properties"])
+sleep (8)
+call (["vim", "+40", "iam/iam-configs/config.properties"])
 
 # deploy and configure
-print ('Deploy openam......')
-chome = grep ('/root/iam/apache-configs/tomcat.service', 'CATALINA_HOME', 2).rstrip()
+chome = grep ('iam/apache-configs/tomcat.service', 'CATALINA_HOME', 2).rstrip()
 print ('Tomcat home = ' + chome)
 if (chome):
 	call ('cp /root/oam/ace.war ' + chome + '/webapps', shell=True)
@@ -45,17 +48,24 @@ else:
 	print ('Exiting due to Tomcat Error: CATALINA_HOME is not defined')
 	exit()
 
-# copy files
-call ('cp /root/iam/iam-configs/DataStore.xml '  + chome + '/webapps/ace/config//auth/default_en/DataStore.xml', shell=True)
-call ('cp /root/iam/iam-configs/index.html ' + chome + '/webapps/ace/XUI/index.html', shell=True)
-call ('cp /root/iam/iam-configs/ThemeConfiguration.js ' + chome + '/webapps/ace/XUI/config/ThemeConfiguration.js', shell=True)
+# copy files - sleep until ace.war is deployed
+print 'Deloying openam ....'
+sleep (15)
+call ('cp iam/iam-configs/DataStore.xml '  + chome + '/webapps/ace/config/auth/default_en', shell=True)
+call ('cp iam/iam-configs/index.html  ' + chome + '/webapps/ace/XUI', shell=True)
+call ('cp iam/iam-configs/ThemeConfiguration.js ' + chome + '/webapps/ace/XUI/config', shell=True)
 
 # configure 
 # get the keystore file location from server.xml
-loc = grep ('/root/iam/apache-configs/server.xml', 'keystoreFile', 1)
-call ('sudo java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar /root/oam/openam-configurator-tool*.jar --file /root/iam/iam-configs/config.properties', shell=True)
+loc = grep ('iam/apache-configs/server.xml', 'keystoreFile', 1)
+print loc
+cmd = 'sudo java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar /root/oam/openam-configurator-tool-13.0.0.jar --file ./iam/iam-configs/config.properties'
+print cmd
+call (cmd, shell=True)
+#call ('sudo java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar /root/oam/openam-configurator-tool-13.0.0.jar --file ./iam/iam-configs/config.properties', shell=True)
 
-
+print 'configuration completed'
+sleep (10)
 # cleanup - delete oam configuration files and git files
-call ('rm -rf /root/iam ', shell=True)
+#call ('rm -rf iam ', shell=True)
 

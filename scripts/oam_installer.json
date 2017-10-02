@@ -1,8 +1,4 @@
 {
   "java" : "java-1.8.0-openjdk.x86_64",
-  "tomcat": "1.7",
-  "git": {
-  	"url" : "https://github.com/mitrefccace/asterisk.git",
-  	"branch" : ""
-  }
+  "tomcat": "7.0.81",
 }
