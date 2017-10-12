@@ -9,9 +9,7 @@ __author__ = "AOROURKE"
 __date__ = "$Sep 8, 2017 10:16:19 AM$"
 
 configuration_file = './oam_installer.json'
-#git_loc = 'https://github.com/mitrefccace/iam.git'
-git_loc = 'ssh://git@git.codev.mitre.org/acrdemo/iam.git'
-git_branch = 'develop'
+git_loc = 'https://github.com/mitrefccace/iam.git'
 default_version ='7.0.81'
 
 def get_version():
