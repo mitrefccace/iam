@@ -5,9 +5,6 @@ from time import sleep
 import platform
 import json
 
-__author__ = "AOROURKE"
-__date__ = "$Sep 8, 2017 10:16:19 AM$"
-
 configuration_file = './oam_installer.json'
 git_loc = 'https://github.com/mitrefccace/iam.git'
 default_version ='7.0.81'
@@ -58,7 +55,7 @@ def install(c):
 	cmd = ["git", "clone", git_loc]
 	print cmd
 	subprocess.call(cmd)
-	subprocess.call(['git',  'checkout', 'develop'], cwd='iam')
+	
 
  	# update server.xml and tomcat.service 
   	print ('Please update keystore path. Save changes when you are done..')
