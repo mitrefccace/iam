@@ -4,8 +4,6 @@ import os.path
 from time import sleep
 import platform
 
-__author__ = "AOROURKE"
-__date__ = "$Sep 8, 2017 10:16:19 AM$"
 
 java_installed_file = './java_installed_output'
 java_version =  'java-1.8.0-openjdk.x86_64' 
@@ -22,13 +20,17 @@ def get_version():
 
      return v 
 
-def install(c): 
+# mode - silent or prompt
+def install(mode): 
   version = get_version()
   token = version.split('-')
-  ans = raw_input ('Do you want to install/update ' + version + ' ? [y/n] ')  
-  if (ans == 'n'):   
-  	print ('Skip installing Java...')  
-  	exit()  
+  if (mode == 'prompt'):
+  	ans = raw_input ('Do you want to install/update ' + version + ' ? [y/n] ')  
+  	if (ans == 'n'):   
+  		print ('Skip installing Java...')  
+  		exit()  
+  else:
+	ans = 'y'
     
   result  = subprocess.call('sudo yum -q list installed | grep ' + java_version + ' && echo "Java already installed"  || echo "Not Installed" > ' + java_installed_file ,  shell='True')  
     
@@ -40,4 +42,4 @@ def install(c):
   	subprocess.call('echo "Installing "' + java_version)  
 
 if __name__ == '__main__':
-	install('continue')    
+	install('prompt')    
