@@ -4,7 +4,6 @@ import os.path
 from time import sleep
 import platform
 
-
 java_installed_file = './java_installed_output'
 java_version =  'java-1.8.0-openjdk.x86_64' 
 configuration_file = './oam_installer.json'
