@@ -76,7 +76,12 @@ def install(mode, c):
  call ('cp iam/iam-configs/DataStore.xml '  + chome + '/webapps/ace/config/auth/default_en', shell=True)
  call ('cp iam/iam-configs/index.html  ' + chome + '/webapps/ace/XUI', shell=True)
  call ('cp iam/iam-configs/ThemeConfiguration.js ' + chome + '/webapps/ace/XUI/config', shell=True)
- 
+ call ('cp iam/iam-configs/Translation.js ' + chome + '/webapps/ace/XUI/locales/en', shell=True)
+ call ('cp iam/images/login-logo.png ' + chome + '/webapps/ace/XUI/images', shell=True)
+ call ('cp iam/images/logo-horizontal.png ' + chome + '/webapps/ace/XUI/images', shell=True)
+ call ('cp iam/images/favicon.ico ' + chome + '/webapps/ace/XUI', shell=True)
+ call ('cp iam/images/PrimaryProductName.png ' + chome + '/webapps/ace/console/images', shell=True)
+
  # configure 
  # get the keystore file location from server.xml
  loc = grep ('iam/apache-configs/server.xml', 'keystoreFile', 1)
