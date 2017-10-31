@@ -7,6 +7,7 @@ import java_installer
 import tomcat_installer
 import json
 
+
 default_server_config = 'iam/iam-configs/config.properties'
 configuration_file = './oam_installer.json'
 

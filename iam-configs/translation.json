@@ -8,7 +8,7 @@
         },
         "messages" : {
             "AppMessages" : {
-                "invalidRealm": "The realm doesn't exist",
+                "invalidRealm" : "The realm doesn't exist",
                 "duplicateRealm": "Duplicate realm",
                 "deleteFail": "Failed to delete",
                 "duplicateItem": "Duplicate item",
