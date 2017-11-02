@@ -5,10 +5,6 @@ from time import sleep
 import platform
 import json
 
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
 
 configuration_file = './oam_installer.json'
 git_loc = 'https://github.com/mitrefccace/iam.git'
@@ -91,11 +87,7 @@ def install(mode, c):
   	# read git location from JSON file
 	cmd = ["git", "clone", git_loc]
 	subprocess.call(cmd)
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> develop
  	# update server.xml and tomcat.service 
 	if (mode == 'silent'):
 	   server_config = get_server_config()
