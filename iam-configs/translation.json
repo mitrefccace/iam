@@ -303,7 +303,7 @@
             "deactivate": "Deactivate",
             "active": "Active",
             "inactive": "Inactive",
-            "copyright" : " ",
+            "copyright" : "You are entering an Official United States Government System, which may be used only for authorized purposes. Unauthorized modification of any information stored on this system may result in criminal prosecution. The Government may monitor and audit the usage of this system, and all persons are hereby notified that use of this system constitutes consent to such monitoring and auditing. This information system is provided for U.S. Government-authorized use only.",
             "build": "Build",
             "sessionExpired" : "Session Expired",
             "enableCookies" : "Cookies must be enabled to login",
