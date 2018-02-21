@@ -7,10 +7,9 @@ import json
 
 
 configuration_file = './oam_installer.json'
-git_loc = 'https://github.com/mitrefccace/iam.git'
 default_version ='7.0.81'
-default_server_config = 'iam/apache-configs/server.xml'
-default__service_config = 'iam/apache-configs/tomcat.service'
+default_server_config = '../apache-configs/server.xml'
+default__service_config = '../apache-configs/tomcat.service'
 
 def get_version():
  # format: <major version>.<minor version>.<subversion> e.g. 7.0.81
@@ -84,9 +83,6 @@ def install(mode, c):
   	subprocess.call ('chmod g+rwx /opt/tomcat/bin ', shell=True)
   	subprocess.call ('chmod g+r /opt/tomcat/bin/* ', shell=True)
   
-  	# read git location from JSON file
-	cmd = ["git", "clone", git_loc]
-	subprocess.call(cmd)
 
  	# update server.xml and tomcat.service 
 	if (mode == 'silent'):
