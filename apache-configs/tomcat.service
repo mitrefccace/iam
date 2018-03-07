@@ -14,8 +14,8 @@ Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
 ExecStart=/opt/tomcat/bin/startup.sh
 ExecStop=/bin/kill -15 $MAINPID
 
-User=root
-Group=root
+User=tomcat
+Group=tomcat
 
 [Install]
 WantedBy=multi-user.target
