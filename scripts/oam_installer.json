@@ -1,7 +1,7 @@
 {
   "java" : "java-1.8.0-openjdk.x86_64",
   "tomcat" : "7.0.81",
-  "tomcat_server_config": "iam/apache-configs/server.xml",
-  "tomcat_service_config": "iam/apache-configs/tomcat.service",
-  "iam_config": "iam/iam-configs/config.properties"
+  "tomcat_server_config": "../apache-configs/server.xml",
+  "tomcat_service_config": "../apache-configs/tomcat.service",
+  "iam_config": "../iam-configs/config.properties"
 }

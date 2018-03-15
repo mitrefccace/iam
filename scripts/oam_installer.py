@@ -3,11 +3,9 @@ from time import sleep
 import os
 import sys
 import subprocess
-import java_installer
-import tomcat_installer
 import json
 
-default_server_config = 'iam/iam-configs/config.properties'
+default_server_config = '../iam-configs/config.properties'
 configuration_file = './oam_installer.json'
 
 def grep (filename, pattern, index):
@@ -37,11 +35,10 @@ def get_server_config():
 
 def cleanup():
  print ('cleanup files ...')
- tomcat_installer.cleanup()
+ #tomcat_installer.cleanup()
+ 
 
 def install(mode, c): 
- java_installer.install(mode)
- tomcat_installer.install(mode, 'continue')
  
  # make sure Tomcat is running. Abort if Tomcat is not running
  if not is_service_running('tomcat'):
@@ -54,18 +51,18 @@ def install(mode, c):
  if (mode == 'silent'):
 	config_file = get_server_config()
 	print 'Using IAM config file: ' + config_file
-	subprocess.call ('mv ' + config_file + ' iam/iam-configs ', shell=True)
+	subprocess.call ('cp ' + config_file + ' ../iam-configs ', shell=True)
  else:
  	print '***  Please UPDATE all entries with the "UPDATE" (8) in the comment and save the changes ***'
  	print '... '
  	sleep (8)
- 	call (["vim", "+40", "iam/iam-configs/config.properties"])
+ 	call (["vim", "+40", "../iam-configs/config.properties"])
  
  # deploy and configure
- chome = grep ('iam/apache-configs/tomcat.service', 'CATALINA_HOME', 2).rstrip()
+ chome = grep ('../apache-configs/tomcat.service', 'CATALINA_HOME', 2).rstrip()
  print ('Tomcat home = ' + chome)
  if (chome):
- 	call ('cp oam/ace.war ' + chome + '/webapps', shell=True)
+ 	call ('cp ace.war ' + chome + '/webapps', shell=True)
  else:
  	print ('Exiting due to Tomcat Error: CATALINA_HOME is not defined')
  	exit()
@@ -73,27 +70,25 @@ def install(mode, c):
  # copy files - sleep until ace.war is deployed
  print 'Deloying openam ....'
  sleep (15)
- call ('cp iam/iam-configs/DataStore.xml '  + chome + '/webapps/ace/config/auth/default_en', shell=True)
- call ('cp iam/iam-configs/index.html  ' + chome + '/webapps/ace/XUI', shell=True)
- call ('cp iam/iam-configs/ThemeConfiguration.js ' + chome + '/webapps/ace/XUI/config', shell=True)
- call ('cp iam/iam-configs/translation.json ' + chome + '/webapps/ace/XUI/locales/en', shell=True)
- call ('cp iam/iam-configs/FooterTemplate.html ' + chome + '/webapps/ace/XUI/templates/common', shell=True)
- call ('cp iam/images/login-logo.png ' + chome + '/webapps/ace/XUI/images', shell=True)
- call ('cp iam/images/logo-horizontal.png ' + chome + '/webapps/ace/XUI/images', shell=True)
- call ('cp iam/images/favicon.ico ' + chome + '/webapps/ace/XUI', shell=True)
- call ('cp iam/images/PrimaryProductName.png ' + chome + '/webapps/ace/console/images', shell=True)
+ call ('cp ../iam-configs/DataStore.xml '  + chome + '/webapps/ace/config/auth/default_en', shell=True)
+ call ('cp ../iam-configs/index.html  ' + chome + '/webapps/ace/XUI', shell=True)
+ call ('cp ../iam-configs/ThemeConfiguration.js ' + chome + '/webapps/ace/XUI/config', shell=True)
+ call ('cp ../iam-configs/translation.json ' + chome + '/webapps/ace/XUI/locales/en', shell=True)
+ call ('cp ../iam-configs/FooterTemplate.html ' + chome + '/webapps/ace/XUI/templates/common', shell=True)
+ call ('cp ../images/login-logo.png ' + chome + '/webapps/ace/XUI/images', shell=True)
+ call ('cp ../images/logo-horizontal.png ' + chome + '/webapps/ace/XUI/images', shell=True)
+ call ('cp ../images/favicon.ico ' + chome + '/webapps/ace/XUI', shell=True)
+ call ('cp ../images/PrimaryProductName.png ' + chome + '/webapps/ace/console/images', shell=True)
 
  # configure 
  # get the keystore file location from server.xml
- loc = grep ('iam/apache-configs/server.xml', 'keystoreFile', 1)
- cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar oam/openam-configurator-tool-13.0.0.jar --file ./iam/iam-configs/config.properties'
+ loc = grep ('../apache-configs/server.xml', 'keystoreFile', 1)
+ cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar ./openam-configurator-tool-13.0.0.jar --file ../iam-configs/config.properties'
  print 'Configuring OpenAM: ' + cmd
  call (cmd, shell=True)
  
  print 'configuration completed'
  sleep (10)
- print 'cleanuping...'
- cleanup()
  
 if __name__ == '__main__':
         mode = 'prompt'
