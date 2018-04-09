@@ -5,8 +5,10 @@ import sys
 import subprocess
 import json
 
-default_server_config = '../iam-configs/config.properties'
-configuration_file = './oam_installer.json'
+default_war_file='./ace.war'
+default_ssoconfig_file='./openam-configurator-tool-13.0.0.jar'
+oam_config='../iam-configs/config.properties'
+configuration_file='./oam_installer.json'
 
 def grep (filename, pattern, index):
      for n,line in enumerate(open(filename)):
@@ -18,20 +20,34 @@ def is_service_running(name):
      with open(os.devnull, 'wb') as hide_output:
          exit_code = subprocess.Popen(['service', name, 'status'], stdout=hide_output, stderr=hide_output).wait()
          return exit_code == 0
- 
-def get_server_config():
+
+def get_ssoconfig():
  if (os.path.lexists(configuration_file)):
       try:
            with open(configuration_file) as jfile:
-           	jdata = json.load(jfile)
-           	server_config = jdata["iam_config"]
+                jdata = json.load(jfile)
+                ssoconfig = jdata["ssoconfig_file"]
       except Exception, e:
-	print ('ERROR: ' + str(e))
-	server_config  = default_server_config
+        print ('ERROR: ' + str(e))
+	ssoconfig = default_ssoconfig_file
  else:
-	print ('ERROR: Failed to find configuration file. Use default value..')
-	server_config = default_server_config
- return server_config
+        print ('ERROR: Failed to find configuration file. Use default value..')
+        ssoconfig = default_ssoconfig_file
+ return ssoconfig
+
+def get_war_file():
+ if (os.path.lexists(configuration_file)):
+      try:
+           with open(configuration_file) as jfile:
+                jdata = json.load(jfile)
+                war_config = jdata["war_file"]
+      except Exception, e:
+        print ('ERROR: ' + str(e))
+        war_config = default_war_file
+ else:
+        print ('ERROR: Failed to find configuration file. Use default value..')
+        war_config = default_war_file
+ return war_config
 
 def cleanup():
  print ('cleanup files ...')
@@ -41,28 +57,31 @@ def cleanup():
 def install(mode, c): 
  
  # make sure Tomcat is running. Abort if Tomcat is not running
+ print 'Using IAM config file: ' + oam_config 
+ war_file = get_war_file()
+ sso_file= get_ssoconfig()
+ print 'Using war file: ' + war_file
+ print 'ssoconfig: ' + sso_file 
+
  if not is_service_running('tomcat'):
  	print 'Existing: Tomcat is not running...'
  	exit()
  else:
  	print 'Checked: Tomcat service is running...'
- 
+
+
  # update config file
- if (mode == 'silent'):
-	config_file = get_server_config()
-	print 'Using IAM config file: ' + config_file
-	subprocess.call ('cp ' + config_file + ' ../iam-configs ', shell=True)
- else:
+ if (mode != 'silent'):
  	print '***  Please UPDATE all entries with the "UPDATE" (8) in the comment and save the changes ***'
  	print '... '
- 	sleep (8)
- 	call (["vim", "+40", "../iam-configs/config.properties"])
+ 	sleep (4)
+ 	call (["vim", "+40", oam_config])
  
  # deploy and configure
  chome = grep ('../apache-configs/tomcat.service', 'CATALINA_HOME', 2).rstrip()
  print ('Tomcat home = ' + chome)
  if (chome):
- 	call ('cp ace.war ' + chome + '/webapps', shell=True)
+ 	call ('cp ' + war_file + ' '  + chome + '/webapps', shell=True)
  else:
  	print ('Exiting due to Tomcat Error: CATALINA_HOME is not defined')
  	exit()
@@ -83,12 +102,11 @@ def install(mode, c):
  # configure 
  # get the keystore file location from server.xml
  loc = grep ('../apache-configs/server.xml', 'keystoreFile', 1)
- cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar ./openam-configurator-tool-13.0.0.jar --file ../iam-configs/config.properties'
+ #cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar ./openam-configurator-tool-13.0.0.jar --file ../iam-configs/config.properties'
+ cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar ' + sso_file + ' --file ' + oam_config 
  print 'Configuring OpenAM: ' + cmd
  call (cmd, shell=True)
- 
- print 'configuration completed'
- sleep (10)
+ sleep (2)
  
 if __name__ == '__main__':
         mode = 'prompt'
@@ -104,4 +122,3 @@ if __name__ == '__main__':
                         print '  -clean: remove configuration files'
                         exit()
         install(mode,c)
-

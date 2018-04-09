@@ -6,6 +6,7 @@ import platform
 import json
 
 
+
 configuration_file = './oam_installer.json'
 default_version ='7.0.81'
 default_server_config = '../apache-configs/server.xml'
@@ -50,6 +51,18 @@ def get_service_config():
         servce_config = default_service_config
  return service_config
 
+def get_proxy():
+ if (os.path.lexists(configuration_file)):
+     try:
+          with open(configuration_file) as json_file:
+                json_data = json.load (json_file)
+                proxy = json_data["proxy_server"]
+     except:
+        proxy =  ""
+ else:
+        proxy =  ""
+ return proxy 
+
 def cleanup():
 	print 'Cleanup and removing configuration files...'
 	subprocess.call('rm -rf /opt/tomcat' , shell=True)
@@ -57,42 +70,46 @@ def cleanup():
 
 # mode: silent/prompt, c: continue/clean 
 def install(mode, c):
-  version = get_version()
-  if (mode == 'prompt'):
-  	 ans = raw_input ('Do you want to install Tomcat '  + version + '? [y/n] ') 
-  	 if (ans == 'n'):
+  	version = get_version()
+  	if (mode == 'prompt'):
+  	   ans = raw_input ('Do you want to install Tomcat '  + version + '? [y/n] ') 
+  	   if (ans == 'n'):
   		print 'Skip installing Tomcat'
-		  exit()
-  	 else:
-	     ans = 'y'
+		exit()
+  	else:
+	   ans = 'y'
 
-  print 'Installing Tomcat version ' + version
-  subprocess.call ('groupadd tomcat ', shell=True)
-  subprocess.call ('useradd -s /bin/nologin -g tomcat -d /opt/tomcat tomcat ', shell=True)
-  major_version = version.split('.')[0]
-  tar_name = 'apache-tomcat-' + version 
-  subprocess.call ('wget http://archive.apache.org/dist/tomcat/tomcat-' + major_version + '/v' + version + '/bin/' + tar_name + '.tar.gz' , shell=True)
-  subprocess.call ('tar -zxvf ' + tar_name + '.tar.gz'  + ' -C /opt ', shell=True)
-  subprocess.call (' rm -rf /opt/tomcat', shell=True)
-  subprocess.call (' ln -s /opt/' + tar_name + ' /opt/tomcat', shell=True)
-  subprocess.call (' chgrp -R tomcat /opt/tomcat/conf ', shell=True)
-  subprocess.call (' chmod g+rwx /opt/tomcat/conf ', shell=True)
-  subprocess.call (' chmod g+r /opt/tomcat/conf/* ', shell=True)
-  subprocess.call (' chown -R tomcat /opt/tomcat/logs/ /opt/tomcat/temp/ /opt/tomcat/webapps/ /opt/tomcat/work/ ', shell=True)
-  subprocess.call (' chgrp -R tomcat /opt/tomcat/bin ', shell=True)
-  subprocess.call (' chgrp -R tomcat /opt/tomcat/lib  ', shell=True)
-  subprocess.call (' chmod g+rwx /opt/tomcat/bin ', shell=True)
-  subprocess.call (' chmod g+r /opt/tomcat/bin/* ', shell=True)
+	# install wget
+ 	print 'Installing wget...'
+	subprocess.call (['yum', 'install', 'wget'])
+  	print 'Installing Tomcat version ' + version
+  	subprocess.call ('groupadd tomcat ', shell=True)
+  	subprocess.call ('useradd -s /bin/nologin -g tomcat -d /opt/tomcat tomcat ', shell=True)
+	major_version = version.split('.')[0]
+	tar_name = 'apache-tomcat-' + version 
+	subprocess.call ('wget http://archive.apache.org/dist/tomcat/tomcat-' + major_version + '/v' + version + '/bin/' + tar_name + '.tar.gz' , shell=True)
+
+  	subprocess.call ('tar -zxvf ' + tar_name + '.tar.gz'  + ' -C /opt ', shell=True)
+	subprocess.call (' rm -rf /opt/tomcat', shell=True)
+	subprocess.call (' ln -s /opt/' + tar_name + ' /opt/tomcat', shell=True)
+  	subprocess.call (' chgrp -R tomcat /opt/tomcat/conf ', shell=True)
+  	subprocess.call (' chmod g+rwx /opt/tomcat/conf ', shell=True)
+  	subprocess.call (' chmod g+r /opt/tomcat/conf/* ', shell=True)
+  	subprocess.call (' chown -R tomcat /opt/tomcat/logs/ /opt/tomcat/temp/ /opt/tomcat/webapps/ /opt/tomcat/work/ ', shell=True)
+  	subprocess.call (' chgrp -R tomcat /opt/tomcat/bin ', shell=True)
+  	subprocess.call (' chgrp -R tomcat /opt/tomcat/lib  ', shell=True)
+  	subprocess.call (' chmod g+rwx /opt/tomcat/bin ', shell=True)
+  	subprocess.call (' chmod g+r /opt/tomcat/bin/* ', shell=True)
   
 
  	# update server.xml and tomcat.service 
 	if (mode == 'silent'):
-    server_config = get_server_config()
-    print 'Use server.xml: ' + server_config
-	  service_config = get_service_config()
-    print 'Use tomcat.service: ' + service_config
-	  subprocess.call (' cp ' + server_config + ' ../apache-configs' , shell=True)
-	  subprocess.call (' cp ' + service_config + ' ../apache-configs', shell=True)
+	   server_config = get_server_config()
+           print 'Use server.xml: ' + server_config
+	   service_config = get_service_config()
+	   print 'Use tomcat.service: ' + service_config
+	   subprocess.call (' cp ' + server_config + ' ../apache-configs' , shell=True)
+	   subprocess.call (' cp ' + service_config + ' ../apache-configs', shell=True)
 	else:
   	   print ('Please update keystore path. Save changes when you are done..')
   	   sleep (5)
@@ -101,17 +118,19 @@ def install(mode, c):
   	   sleep (5)
   	   subprocess.call('vim +17 ../apache-configs/tomcat.service', shell=True) 	
   	# move the files to the right location
-  subprocess.call (' cp ../apache-configs/server.xml /opt/tomcat/conf', shell=True)	
-  subprocess.call (' cp ../apache-configs/tomcat.service /etc/systemd/system/tomcat.service', shell=True)	
+  	subprocess.call (' cp ../apache-configs/server.xml /opt/tomcat/conf', shell=True)	
+  	subprocess.call (' cp ../apache-configs/tomcat.service /etc/systemd/system/tomcat.service', shell=True)	
   
 	print 'starting tomcat service ....'
 	subprocess.call (' systemctl daemon-reload', shell=True)
-  subprocess.call (' systemctl restart tomcat.service', shell=True)
-  subprocess.call (' systemctl enable tomcat.service', shell=True)	
+  	subprocess.call (' systemctl restart tomcat.service', shell=True)
+  	subprocess.call (' systemctl enable tomcat.service', shell=True)	
 	sleep (10)
 
   	# finish
-	print 'Tomcat Installation completed.'
+  	print 'Tomcat Installation completed.'
+	#subprocess.call('rm apach*.tar.gz*', shell=True)
+
 
 if __name__ == '__main__':
 	mode = 'prompt'

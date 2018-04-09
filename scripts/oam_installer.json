@@ -1,7 +1,8 @@
 {
   "java" : "java-1.8.0-openjdk.x86_64",
   "tomcat" : "7.0.81",
-  "tomcat_server_config": "../apache-configs/server.xml",
-  "tomcat_service_config": "../apache-configs/tomcat.service",
-  "iam_config": "../iam-configs/config.properties"
+  "oam_path" : ".",
+  "ssoadm_file" : ".ssoadm",
+  "ssoconfig_file" : "./openam-configurator-tool-13.0.0.jar",
+  "war_file" : "./ace.war"
 }
