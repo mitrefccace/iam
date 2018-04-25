@@ -10,7 +10,7 @@ import json
 configuration_file = './oam_installer.json'
 default_version ='7.0.81'
 default_server_config = '../apache-configs/server.xml'
-default__service_config = '../apache-configs/tomcat.service'
+default_service_config = '../apache-configs/tomcat.service'
 
 def get_version():
  # format: <major version>.<minor version>.<subversion> e.g. 7.0.81
