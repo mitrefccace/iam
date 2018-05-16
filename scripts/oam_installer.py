@@ -88,7 +88,7 @@ def install(mode, c):
  
  # copy files - sleep until ace.war is deployed
  print 'Deloying openam ....'
- sleep (15)
+ sleep (35)
  call ('cp ../iam-configs/DataStore.xml '  + chome + '/webapps/ace/config/auth/default_en', shell=True)
  call ('cp ../iam-configs/index.html  ' + chome + '/webapps/ace/XUI', shell=True)
  call ('cp ../iam-configs/ThemeConfiguration.js ' + chome + '/webapps/ace/XUI/config', shell=True)
