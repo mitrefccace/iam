@@ -1,0 +1,19 @@
+FROM tomcat:7.0-jdk8
+ARG proxy
+ENV http_proxy=${proxy}
+ENV https_proxy=${proxy}
+
+RUN echo "proxy = $proxy"
+RUN wget https://github.com/OpenRock/OpenAM/releases/download/13.0.0/OpenAM-13.0.0.zip && \
+    unzip -d unpacked *.zip && \
+    mv unpacked/openam/OpenAM*.war $CATALINA_HOME/webapps/openam.war && \
+    rm -rf *.zip unpacked
+ENV CATALINA_OPTS="-Xmx2048m -server"
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+# CMD perl -0pi.bak -e 's/<!--\n\s+<Connector port="8443"/<!--MITRE--><Connector port="8443" maxHttpHeaderSize="102400" keystoreFile="\/opt\/server.keystore" keystorePass="$ENV{'KEYSTORE_PASS'}"/' $CATALINA_HOME/conf/server.xml && \
+#    perl -0pi.bak -e 's/sslProtocol="TLS" \/>\n    -->/sslProtocol="TLS" \/>/' $CATALINA_HOME/conf/server.xml && \
+COPY conf/server.xml.tmpl conf/server.xml.tmpl
+CMD dockerize -template conf/server.xml.tmpl:$CATALINA_HOME/conf/server.xml catalina.sh run

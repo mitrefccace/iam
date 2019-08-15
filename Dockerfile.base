@@ -1,0 +1,6 @@
+# Now, add an editor so we can check on things.
+#
+# FROM vault/openam:latest
+FROM  openam:latest
+COPY ./vile /bin/vile
+
