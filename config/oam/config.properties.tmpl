@@ -45,6 +45,7 @@
 ### 3. ADMIN_PWD (8 characters minimum)
 ### 4. AMLDAPUSERPASSWRD (8 characters minimum, not the same as ADMIN_PWD)
 ### 5. COOKIE_DOMAIN (part of the SERVER_URL e.g. .example.com)
+### 6. UPDATE THIS FILE WITH YOUR DOMAIN (e.g. .domain.com)
 ### !!!!      !!!!!
 #############################################################################
 SERVER_URL={{ .Env.SERVER_URL }}
@@ -55,7 +56,7 @@ PLATFORM_LOCALE=en_US
 AM_ENC_KEY=
 ADMIN_PWD={{ .Env.ADMIN_PWD }}
 AMLDAPUSERPASSWD={{ .Env.AMLDAPUSERPASSWD }}
-COOKIE_DOMAIN=.task3acrdemo.com
+COOKIE_DOMAIN=.domain.com
 ACCEPT_LICENSES=true
 
 ##############################################################################

@@ -10,3 +10,4 @@ config/oam/SSOAdminTools-13.0.0/log
 config/oam/SSOAdminTools-13.0.0/*.txt
 scripts/debug
 scripts/log
+.DS_Store

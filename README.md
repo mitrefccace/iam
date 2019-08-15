@@ -545,4 +545,6 @@ This version of the OpenAM container was tested using Docker v19.03.1. Please do
 1. run create_users.sh
 1. at that point, the opendj database should be created and you can stop the container and restart it with any port you want.
  
+## Final Note
 
+Some installation scripts require updating to include your server FQDNs and IP addresses. See the comments included in those scripts.
