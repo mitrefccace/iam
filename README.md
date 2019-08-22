@@ -84,13 +84,21 @@ In `~/iam/config/config.json`, set/verify the fields below. Note that the file p
 Where...
 
 'cert_path': the ssl certificate
+
 'cert_key_path': the ssl certificate key
+
 'p12_out_filename': the filename for the pkcs12 keystore to be imported into the jks keystore
+
 'p12_export_pass': the export password associated with pkcs12
+
 'alias': the alias used to identify the tomcat keystore entry
+
 'dest_keystore_pass': the password to access the jks keystore; set 'keystorePass' in `server.xml` to this same value
-'keystore_path': the initial file path for generated jks keystore - tomcat_installer will move keystore to /opt/tomcat
+
+'keystore_path': the initial file path for generated jks keystore - tomcat_installer will move keystore to `/opt/tomcat`
+
 'tomcat_server_config': the location of `server.xml` in this repo
+
 'tomcat_service_config': the location of `tomcat.service` in this repo
 
 ### OpenAM Configuration
@@ -114,9 +122,13 @@ Set/verify the following fields in the `~/iam/config/config.json`. Note that all
 Where...
 
 'ssoadm_file': location of the ssoadm executable after completing the administration tools setup
+
 'ssoconfig_file': location of the sso OpenAM configurator tool
+
 'war_file': location of the original OpenAM ace deployment file
+
 'adminid': default admin id used for admin tools
+
 'admin_pwd_file': path to the file containing the admin password in cleartext
 
 ### SSL Configuration
