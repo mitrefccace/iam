@@ -27,7 +27,7 @@ The installation and setup procedures described in this document are to be used 
 ## Getting Started
 
 1. Clone this `iam` repository to your target OpenAM server.
-1. Verify that you have elevated privileges (`sudo`) to follow this installation guide.
+1. Verify that you have elevated privileges (`sudo`) before following this installation guide.
 1. Recommended steps:
 
     * Install the required software
@@ -38,9 +38,9 @@ The installation and setup procedures described in this document are to be used 
 
 Install this required software, if not present:
 
-* Python 2
+* Python 2.7.x
 * wget
-* Java Open JDK 8 (see [Install](#Install))
+* Java Open JDK 8 (see [Installation](#installation))
 * git
 * unzip
 * openssl
@@ -115,7 +115,7 @@ Where...
 
 'ssoadm_file': location of the ssoadm executable after completing the administration tools setup
 'ssoconfig_file': location of the sso OpenAM configurator tool
-'war_file': location of the original openam ace deployment file
+'war_file': location of the original OpenAM ace deployment file
 'adminid': default admin id used for admin tools
 'admin_pwd_file': path to the file containing the admin password in cleartext
 
@@ -182,7 +182,7 @@ In `~/iam/config/oam/config.properties`, update the following values:
 * **SERVER_URL**: (URL of the Tomcat Server. Make sure the port number matches the port number in server.xml. See [SSL Configuration](#ssl-configuration))
   * **NOTE**: URL name must NOT contain `_` and the FQDN must be _at least_ two levels.
     * For example: server.example.com is valid, but example.com and example_server.host.com are NOT.
-* **BASE_DIR**: the base directory of your openam deployment
+* **BASE_DIR**: the base directory of your OpenAM deployment
   * For example: `/opt/tomcat/webapps/ace`
 * **ADMIN_PWD**: 8 characters minimum
 * **AMLDAPUSERPASSWRD**: 8 characters minimum, NOT the same as ADMIN_PWD
@@ -249,7 +249,7 @@ Update the following files before running the Java, Tomcat, or the OAM installer
     PATH=$PATH:$HOME/bin
     JAVA_HOME=path_to_openjdk # CHANGE path_to_openjdk to the full path to openjdk 8
     export JAVA_HOME
-    export JAVA_OPTS="-server  -Xmx2048m -Xms128m  -XX:+UseConcMarkSweepGC" -XX:+UseSerialGC"
+    export JAVA_OPTS="-server  -Xmx2048m -Xms128m  -XX:+UseConcMarkSweepGC -XX:+UseSerialGC"
     PATH=$PATH:$JAVA_HOME/bin
     export PATH
     ```
@@ -293,8 +293,7 @@ If Java is not already set up in your environment, install it:
     PATH=$PATH:$HOME/bin
     JAVA_HOME=path_to_openjdk # where path_to_openjdk is the path to openjdk 8
     export JAVA_HOME
-    export JAVA_OPTS="-server -Xmx2048m -XX:+UseSerialGC"
-    export JAVA_OPTS="-server  -Xmx2048m -Xms128m  -XX:+UseConcMarkSweepGC"
+    export JAVA_OPTS="-server -Xmx2048m -Xms128m -XX:+UseConcMarkSweepGC -XX:+UseSerialGC"
     PATH=$PATH:$JAVA_HOME/bin
     export PATH
     source ~/.bashrc
@@ -392,7 +391,7 @@ The config file to be updated is: `iam/config/tomcat/server.xml`:
 
 1. An SSL configuration guide for Tomcat can be found [here](http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html) for reference.
 1. Make sure you have followed the SSL Configuration section of [Configuration Parameters](#configuration-parameters) -> SSL Configuration using server.xml towards the beginning of this guide.
-1. After properly configuring the `server.xml` file, as `root`, copy it to `/opt/tomcat/conf`
+1. After properly configuring the `server.xml` file, as `root`, copy it to `/opt/tomcat/conf`.
 1. Start Tomcat by entering the following commands:
 
     ```bash
@@ -417,7 +416,7 @@ For reference, see the [OpenAM Installation Guide](https://backstage.forgerock.c
 
 1. Start Apache Tomcat if not already started: `sudo service tomcat start`
 1. Copy the `ace.war` file located in `iam/config/oam` to `/opt/tomcat/webapps` . This will start the OpenAM deployment.
-1. Execute the following commands on the command prompt to copy relevant ace direct files from the repo to the openam deployment directory:
+1. Execute the following commands on the command prompt to copy relevant ace direct files from the repo to the OpenAM deployment directory:
 
     ```bash
     cp iam/config/oam/DataStore.xml /opt/tomcat/webapps/ace/config/auth/default_en
@@ -447,15 +446,15 @@ For reference, see the [OpenAM Installation Guide](https://backstage.forgerock.c
 
 See the reference outlining a full OpenAM installation [here](https://backstage.forgerock.com/docs/openam/13/install-guide/#chap-install-tools), for additional information.
 
-1. Verify that OpenAm is installed and running before proceeding
-1. Verify that the `JAVA_HOME` environment variable is set properly: `$ echo $JAVA_HOME`
-1. The SSOAdminTools directory is included in the repo at the following path: `iam/config/oam/SSOAdminTools-13.0.0`
-1. Go to the directory of the `SSOAdminTools`
+1. Verify that OpenAm is installed and running before proceeding.
+1. Verify that the `JAVA_HOME` environment variable is set properly: `$ echo $JAVA_HOME` .
+1. The SSOAdminTools directory is included in the repo at the following path: `iam/config/oam/SSOAdminTools-13.0.0`.
+1. Go to the directory of the `SSOAdminTools`.
 1. Run the setup utility passing in the correct command line arguments:
 
     ```bash
     # Command line arguments
-    #   -p                  path to config files of openam server
+    #   -p                  path to config files of OpenAM server
     #   -l                  path to desired logs directory
     #   -d                  path to desired debug directory
     #   --acceptLicense     allows the user to automatically accept the license agreement
@@ -491,22 +490,22 @@ See the reference outlining a full OpenAM installation [here](https://backstage.
 
 #### Creating Users
 
-1. Users can be created using the `ssoadm` administration tool used in the previous section:
+Users can be created using the `ssoadm` administration tool used in the previous section:
 
-    ```bash
-    $ sudo ./ssoadm create-identity -u [adminid] -f [admin_password_file] -e [realm] -i [username] -t [identity_type] -a "userpassword=[newuserpassword]"
+```bash
+$ sudo ./ssoadm create-identity -u [adminid] -f [admin_password_file] -e [realm] -i [username] -t [identity_type] -a "userpassword=[newuserpassword]"
 
-    #Command line arguments
-    #   -u    the administrator ID running the command
-    #   -f    the filename that contains the password of the administrator
-    #   -e    the name of the realm; the sub configuration will be added to the global configuration if this option is not selected
-    #   -i    the desired name for the new identity to be created
-    #   -t    type of identity to create
-    #   -a    attribute values
+#Command line arguments
+#   -u    the administrator ID running the command
+#   -f    the filename that contains the password of the administrator
+#   -e    the name of the realm; the sub configuration will be added to the global configuration if this option is not selected
+#   -i    the desired name for the new identity to be created
+#   -t    type of identity to create
+#   -a    attribute values
 
-    #Example
-    $ sudo ./ssoadm create-identity -u amadmin -f .pwd.txt -e / -i dagent1 -t User -a "userpassword=Dagent1#"
-    ```
+#Example
+$ sudo ./ssoadm create-identity -u amadmin -f .pwd.txt -e / -i dagent1 -t User -a "userpassword=Dagent1#"
+```
 
 ---
 
@@ -562,8 +561,6 @@ Usage: Enter the URL in the browser and the OpenAM login screen is displayed: `h
 
 Some common issues and their possible resolutions.
 
-Check the logs
-
 ### Errors
 
 ---
@@ -599,11 +596,11 @@ FileNotFoundException: .openamcfg file not found
 
 #### Problem 2
 
-This error is a result of the openam configuration tool attempting to create an openam configuration file at the end of the configuration process. The full stack trace for this error can be found in the install.log file located in your openam webapp configuration directory. (e.g. /opt/tomcat/webapps/ace/install.log)
+This error is a result of the OpenAM configuration tool attempting to create an OpenAM configuration file at the end of the configuration process. The full stack trace for this error can be found in the install.log file located in your OpenAM webapp configuration directory. (e.g. `/opt/tomcat/webapps/ace/install.log`)
 
 #### Solution 2
 
-After you install Tomcat but before you run the openam configuration tool, make sure you change ownership of /opt/tomcat to the tomcat user. `sudo chown tomcat /opt/tomcat/`
+After you install Tomcat but before you run the OpenAM configuration tool, make sure you change ownership of `/opt/tomcat` to the tomcat user. `sudo chown tomcat /opt/tomcat/`
 
 ---
 
@@ -629,16 +626,16 @@ This error can be related to a couple of things:
 
 1. Keystore issues
     * Refer to the error mentioned previously concerning keystores
-1. An incorrect server.xml *keystoreFilePath*
+1. An incorrect `server.xml` *keystoreFilePath*
 1. Ensure that there are 3 levels in your Fully Qualified Domain Name (FQDN)
     * OpenAM requires a 3-level FQDN (e.g. **Valid**: example.domain.com **Invalid**: example.com)
-1. Ensure that your ssl ports match up between your server.xml file and your config.properties file.
+1. Ensure that your SSL ports match up between your `server.xml` file and your `config.properties` file.
 
 ---
 
 #### Problem 5
 
-An https handshake error occurs
+An HTTPS handshake error occurs
 
 #### Solution 5
 
@@ -656,7 +653,3 @@ This error is due to environment variables not being maintained when running the
 
 * You can also add retain the *JAVA_HOME* environment variable by adding the following line to /etc/sudoers:
   * `Defaults env_keep+="JAVA_HOME"`
-
-## Final Note
-
-Some installation scripts require updating to include your server FQDNs and IP addresses. See the comments included in those scripts.
