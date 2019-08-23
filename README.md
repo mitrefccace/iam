@@ -140,7 +140,7 @@ In `~/iam/tomcat/server.xml`, set/verify the following fields:
 * **keystorePass**:  Password associated with your generated keystore; this should be the same value as *dest_keystore_pass* in `iam/config/config.json`
 * **keyAlias**: Name associated with the Tomcat entry within the keystore; this should be same value as *alias* in `iam/config/config.json`
 
-Set/verify the above fields in `~/iam/tomcat/server.xml`. They are around `Line 117`:
+Set/verify the above fields in `~/iam/config/tomcat/server.xml`. They are around `Line 117`:
 
 ```xml
 <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
@@ -155,13 +155,13 @@ Set/verify the above fields in `~/iam/tomcat/server.xml`. They are around `Line 
 
 ### Tomcat Service Configuration
 
-In `~/iam/tomcat/tomcat.service`, update the following parameters:
+In `~/iam/config/tomcat/tomcat.service`, update the following parameters:
 
 * **JAVA_HOME**: absolute path of the installed openjdk-1.8.0.xx
   * Find this easily by executing: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
 * **JRE_HOME**: same value as JAVA_HOME
 
-Set the above fields in `~/iam/tomcat/tomcat.service` and verify the other fields:
+Set the above fields in `~/iam/config/tomcat/tomcat.service` and verify the other fields:
 
 ```service
 [Unit]
@@ -246,15 +246,6 @@ The automated installation currently installs and configures Tomcat and OpenAM i
 
 Update the following files before running the Java, Tomcat, or the OAM installer programs:
 
-1. Update all configuration parameters in `config.json`
-1. Update Apache `tomcat.service` and `server.xml`
-1. Update OAM `config.properties`
-1. Move **key.pem** and **cert.pem** to `iam/ssl/`
-1. **Important:** go to the `scripts` folder: `cd ~/iam/scripts` _before_ running the installation scripts.
-1. Run the following commands in order as `root` or use `sudo`.
-1. Install Java if not present: `sudo python java_installer.py`
-1. Generate the keystore: `sudo python keystore.py`
-1. Find the full path to OpenJDK 8, you will need this for the next step: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
 1. Verify/add the following lines to `~/.bashrc`:
 
     ```bash
@@ -265,6 +256,17 @@ Update the following files before running the Java, Tomcat, or the OAM installer
     PATH=$PATH:$JAVA_HOME/bin
     export PATH
     ```
+
+1. Update all configuration parameters in `config.json`
+1. Update Apache `tomcat.service` and `server.xml`
+1. Update OAM `config.properties`
+1. Move **key.pem** and **cert.pem** to `iam/ssl/`
+1. **Important:** go to the `scripts` folder: `cd ~/iam/scripts` _before_ running the installation scripts.
+1. Run the following commands in order as `root` or use `sudo`.
+1. Install Java if not present: `sudo python java_installer.py`
+1. Generate the keystore: `sudo python keystore.py`
+1. Find the full path to OpenJDK 8, you will need this for the next step: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
+
 
 1. Now source `.bashrc` to set the environment and ensure no errors:: `source ~/.bashrc`
 1. Install and configure Apache Tomcat `sudo python tomcat_installer.py -silent`
@@ -594,7 +596,7 @@ This error is related to the keystore and is likely due to one of the following 
 
 1. Ensure that the keystore is non-empty
     * This can be done by listing the certificates within the keystore
-    * `keytool list -v -keystore /path/to/your/keystore`
+    * `keytool -list -v -keystore /path/to/your/keystore`
 1. Ensure that *keystoreFilePath* is correct in your *server.xml* file
 1. Ensure that you have the correct permission required to access the keystore
     * Try using your command with sudo `sudo yourcommand`

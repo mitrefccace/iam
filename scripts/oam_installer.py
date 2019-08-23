@@ -84,8 +84,9 @@ def install(mode, c):
     # configure
     # get the keystore file location from server.xml
     loc = grep('../config/tomcat/server.xml', 'keystoreFile', 1)
+    loc2 = grep('../config/tomcat/server.xml', 'keystorePass', 1)
     # cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar ./openam-configurator-tool-13.0.0.jar --file ../iam-configs/config.properties'
-    cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -jar ' + sso_file + ' --file ' + oam_config
+    cmd = 'java -Djavax.net.ssl.trustStore=' + loc.rstrip() + ' -Djavax.net.ssl.trustStorePassword=' + loc2.rstrip()  +  ' -jar ' + sso_file + ' --file ' + oam_config
     print('Configuring OpenAM: ' + cmd)
     call(cmd, shell=True)
     sleep(2)
