@@ -287,6 +287,7 @@ Update the following files before running the Java, Tomcat, or the OAM installer
     * Use `curl` from the command prompt: `curl -k https://OPENAM_PRIVATE_IP:8443  # drop the ace`
 
 1. The ACE login page should appear in the browser OR in the console output, depending on which test method you used.
+1. Remember the `oam.adminid` value and `oam.admin_pwd_file` contents (see `iam/config/config.json`). You will need these values to update your Node server `dat/config.json` `openam.user` and `openam.password` fields. ACE Direct needs this credentials to maintain agent info.
 1. This completes the OpenAM installation and configuration.
 
 **Note: to auto-install the software interactively (with prompts for input):**
