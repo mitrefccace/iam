@@ -274,15 +274,19 @@ Update the following files before running the Java, Tomcat, or the OAM installer
 1. Verify your configuration parameters for the OpenAM users to be created in `iam/config/config.json`
 1. Create the OpenAM users (you may optionally use the OpenAM web-based GUI and skip this step):
 
-   * Completely follow the [Administration Tools Setup](#administration-tools-setup) directions in the [Manual Installation](#manual-installation) section in the second half of this guide.
-   * Verify that the absolute path of the newly created `pwd.txt` file is correct in `iam/config/config.json`.
-   * Create your OpenAM users `sudo python create_users.py`
+    * Completely follow the [Administration Tools Setup](#administration-tools-setup) directions in the [Manual Installation](#manual-installation) section in the second half of this guide.
+    * Verify that the absolute path of the newly created `pwd.txt` file is correct in `iam/config/config.json`.
+    * Create your OpenAM users `sudo python create_users.py`
 
-1. Verify that the OpenAM software is installed and configured by entering the following URL on the browser if it is not behind a proxy server:
+1. Verify that the OpenAM software is installed and configured:
+
+    * Enter the following URL on the browser if it is not behind a proxy server:
 
     `https://<FQDN>:<port>/ace`  e.g. `https://some.fqdn.com:8443/ace`
 
-1. The ACE login page should appear in the browser.
+    * Use `curl` from the command prompt: `curl -k https://OPENAM_PRIVATE_IP:8443  # drop the ace`
+
+1. The ACE login page should appear in the browser OR in the console output, depending on which test method you used.
 1. This completes the OpenAM installation and configuration.
 
 **Note: to auto-install the software interactively (with prompts for input):**
@@ -414,7 +418,7 @@ The config file to be updated is: `iam/config/tomcat/server.xml`:
     sudo systemctl enable tomcat.service
     ```
 
-1. Test that Tomcat is running by entering `https://<FQDN>:<port>` (e.g. `https://some.fqdn.com:8081`) in the browser. The Tomcat welcome page should be displayed.
+1. Test that Tomcat is running by entering `https://<FQDN>:<port>` (e.g. `https://some.fqdn.com:8443`) in the browser. The Tomcat welcome page should be displayed.
 
 ### Install and Configure OpenAM
 
