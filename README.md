@@ -493,7 +493,7 @@ See the reference outlining a full OpenAM installation [here](https://backstage.
     ```
 
 1. To allow the `ssoadm` command to trust certificates, add the `-D"javax.net.ssl.trustStore=/path/to/tomcat/conf/path/to/your/keystore"` option to the ssoadm script before using it. Make sure to add in the path to your actual keystore. The option should be set before the call to `com.sun.identity.cli.CommandManager` at the end of the script.
-
+1. Also add the trust store password to the end of the ssoadm script: `-D"javax.net.ssl.trustStorePassword=changeit"`.
 1. Verify that the file was edited correctly: `$ tail -2 ssoadm` should show the following output:
 
     ```bash
