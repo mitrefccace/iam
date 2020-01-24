@@ -17,12 +17,12 @@ The installation and setup procedures described in this document are to be used 
     * The filenames are: `cert.pem` and `key.pem`
     * Acquired from a trusted certificate authority
     * Specify a three-level fully-qualified domain name (FQDN) for the OpenAM server, for example: `test.examples.com`
-    * FQDN does *not* use underscore (_), for example, this is invalid: `my_host.domain.com`
+    * FQDN does *not* use underscores (_), for example, this FQDN is invalid: `my_host.domain.com`
 
-1. Root privileges are available to install the software
-1. Running the `hostname` command returns the FQDN that aligns with the `cert.pem` and `key.pem`
+1. Root privileges are available to install the software.
+1. Running the `hostname` command returns the FQDN that aligns with the `cert.pem` and `key.pem`.
 1. Update `/etc/hosts` with the private IP, alias, and FQDN for the OpenAM and ACE Direct servers.
-1. _If the OpenAM server is running behind a network proxy_, create an entry for the `http_proxy` for wget. Depending on your operating system, it may be in `~/.wgetrc` or `/etc/wgetrc`
+1. _If the OpenAM server is running behind a network proxy_, create an entry for the `http_proxy` for wget. Depending on your operating system, it may be in `~/.wgetrc` or `/etc/wgetrc`.
 
 ## Getting Started
 
@@ -135,12 +135,15 @@ Where...
 
 In `~/iam/tomcat/server.xml`, set/verify the following fields:
 
-* **port**: Desired SSL port
-* **keystoreFile**: Path where Tomcat will look for the jks keystore
-* **keystorePass**:  Password associated with your generated keystore; this should be the same value as *dest_keystore_pass* in `iam/config/config.json`
-* **keyAlias**: Name associated with the Tomcat entry within the keystore; this should be same value as *alias* in `iam/config/config.json`
+`port`: desired SSL port
 
-Set/verify the above fields in `~/iam/config/tomcat/server.xml`. They are around `Line 117`:
+`keystoreFile`: path where Tomcat will look for the jks keystore
+
+`keystorePass`: password associated with your generated keystore; this should be the same value as *dest_keystore_pass* in `iam/config/config.json`
+
+`keyAlias`: name associated with the Tomcat entry within the keystore; this should be same value as *alias* in `iam/config/config.json`
+
+Set/verify the above fields in `~/iam/config/tomcat/server.xml`. They are on or near `Line 117`:
 
 ```xml
 <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
@@ -157,9 +160,9 @@ Set/verify the above fields in `~/iam/config/tomcat/server.xml`. They are around
 
 In `~/iam/config/tomcat/tomcat.service`, update the following parameters:
 
-* **JAVA_HOME**: absolute path of the installed openjdk-1.8.0.xx
-  * Find this easily by executing: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
-* **JRE_HOME**: same value as JAVA_HOME
+`JAVA_HOME`: absolute path of the installed openjdk-1.8.0.xx, find this easily by executing: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
+
+`JRE_HOME`: use the same value as JAVA_HOME
 
 Set the above fields in `~/iam/config/tomcat/tomcat.service` and verify the other fields:
 
@@ -191,14 +194,18 @@ WantedBy=multi-user.target
 
 In `~/iam/config/oam/config.properties`, update the following values:
 
-* **SERVER_URL**: (URL of the Tomcat Server. Make sure the port number matches the port number in server.xml. See [SSL Configuration](#ssl-configuration))
-  * **NOTE**: URL name must NOT contain `_` and the FQDN must be _at least_ two levels.
-    * For example: server.example.com is valid, but example.com and example_server.host.com are NOT.
-* **BASE_DIR**: the base directory of your OpenAM deployment
+`SERVER_URL`: (URL of the Tomcat Server. Make sure the port number matches the port number in server.xml. See [SSL Configuration](#ssl-configuration))
+
+* **NOTE**: URL name must NOT contain an underscore `_` and the FQDN must be _at least_ two levels deep. For example: server.example.com is valid, but example.com and example_server.host.com are NOT.
+
+`BASE_DIR`: the base directory of your OpenAM deployment
   * For example: `/opt/tomcat/webapps/ace`
-* **ADMIN_PWD**: 8 characters minimum
-* **AMLDAPUSERPASSWRD**: 8 characters minimum, NOT the same as ADMIN_PWD
-* **COOKIE_DOMAIN**: part of the SERVER_URL e.g. .example.com
+
+`ADMIN_PWD`: 8 characters minimum
+
+`AMLDAPUSERPASSWRD`: 8 characters minimum, NOT the same as ADMIN_PWD
+
+`COOKIE_DOMAIN`: part of the SERVER_URL e.g. .example.com
 
 Set/verify the above fields and verify the other fields in the following sections of `~/iam/config/oam/config.properties`:
 
@@ -215,8 +222,9 @@ COOKIE_DOMAIN=.fqdn.com
 ACCEPT_LICENSES=true
 ```
 
-* **DIRECTORY_SERVER**: should be the same as SERVER_URL, but _without_ the port number
-* **DS_DIRMGRPASSWD**: 8 characters minimum, and should NOT be the same as ADMIN_PWD or AMLDAPUSERPASSWRD
+`DIRECTORY_SERVER`: should be the same as SERVER_URL, but _without_ the port number
+
+`DS_DIRMGRPASSWD`: 8 characters minimum, and should NOT be the same as ADMIN_PWD or AMLDAPUSERPASSWRD
 
 ```properties
 DATA_STORE=embedded
@@ -240,7 +248,7 @@ The automated installation currently installs and configures Tomcat and OpenAM i
 
 * OpenAM uses DNS (if the environment supports this configuration) for IP mapping or it uses `/etc/hosts`. The IP address in the DNS lookup must be accessible by OpenAM. Restart NGINX and OpenAM if switching from DNS to `/etc/hosts` or vice versa.
 * All configuration files have been properly updated as described in the preceding sections of this document.
-* The `key.pem` and `cert.pem` files have been moved to the `iam/ssl/` directory
+* The `key.pem` and `cert.pem` files have been moved to the `iam/ssl/` directory.
 
 ### Installation
 
@@ -261,12 +269,12 @@ Update the following files before running the Java, Tomcat, or the OAM installer
 1. Update Apache `tomcat.service` and `server.xml`
 1. Update OAM `config.properties`
 1. Move **key.pem** and **cert.pem** to `iam/ssl/`
-1. **Important:** go to the `scripts` folder: `cd ~/iam/scripts` _before_ running the installation scripts.
-1. Run the following commands in order as `root` or use `sudo`.
+
+    **Important:** Go to the `scripts` folder: `cd ~/iam/scripts` _before_ running the installation scripts and run the following commands in order as `root` or use `sudo`.
+
 1. Install Java if not present: `sudo python java_installer.py`
 1. Generate the keystore: `sudo python keystore.py`
 1. Find the full path to OpenJDK 8, you will need this for the next step: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
-
 
 1. Now source `.bashrc` to set the environment and ensure no errors:: `source ~/.bashrc`
 1. Install and configure Apache Tomcat `sudo python tomcat_installer.py -silent`
@@ -274,9 +282,9 @@ Update the following files before running the Java, Tomcat, or the OAM installer
 1. Verify your configuration parameters for the OpenAM users to be created in `iam/config/config.json`
 1. Create the OpenAM users (you may optionally use the OpenAM web-based GUI and skip this step):
 
-    * Completely follow the [Administration Tools Setup](#administration-tools-setup) directions in the [Manual Installation](#manual-installation) section in the second half of this guide.
-    * Verify that the absolute path of the newly created `pwd.txt` file is correct in `iam/config/config.json`.
-    * Create your OpenAM users `sudo python create_users.py`
+   * Completely follow the [Administration Tools Setup](#administration-tools-setup) directions in the [Manual Installation](#manual-installation---option-2) section in the second half of this guide.
+   * Verify that the variable `admin_pwd_file` in `iam/config/config.json` points to the newly created `pwd.txt`.
+   * Create your OpenAM users with the following command: `sudo python create_users.py`
 
 1. Verify that the OpenAM software is installed and configured:
 
@@ -287,14 +295,16 @@ Update the following files before running the Java, Tomcat, or the OAM installer
     * Use `curl` from the command prompt: `curl -k https://OPENAM_PRIVATE_IP:8443  # drop the ace`
 
 1. The ACE login page should appear in the browser OR in the console output, depending on which test method you used.
+
 1. Remember the `oam.adminid` value and `oam.admin_pwd_file` contents (see `iam/config/config.json`). You will need these values to update your Node server `dat/config.json` `openam.user` and `openam.password` fields. ACE Direct needs this credentials to maintain agent info.
-1. This completes the OpenAM installation and configuration.
+
+This completes the OpenAM installation and configuration.
 
 **Note: to auto-install the software interactively (with prompts for input):**
 
 1. Execute the above commands _without_ the silent flag (`-silent`).
-1. Update all configuration properties when prompted. The files will be opened in the `vim` editor. Save the file when you are finished editing (`Escape :wq`).
-1. Parameters that should be updated are marked with  "UPDATE" in the comment fields
+2. Update all configuration properties when prompted. The files will be opened in the `vim` editor. Save the file when you are finished editing (`Escape :wq`).
+3. Parameters that should be updated are marked with  "UPDATE" in the comment fields
 
 ---
 
@@ -304,8 +314,8 @@ Update the following files before running the Java, Tomcat, or the OAM installer
 
 If Java is not already set up in your environment, install it:
 
-1. Install openjdk 8, for example, `yum install java-1.8.0-openjdk-devel.x86_64`
-1. Find the full path to the OpenJDK 8 installation: `echo $(dirname $(dirname $(readlink -f $(which javac))))` . You will need this later.
+1. Install openjdk 8, for example, `yum install java-1.8.0-openjdk-devel.x86_64` or run the Java installer script `scripts/java_installer.py`.
+1. Find the full path to the OpenJDK 8 installation: `echo $(dirname $(dirname $(readlink -f $(which javac))))`. Remember this path, you will need it later.
 1. Verify/add the following lines to `~/.bash_rc`:
 
     ```bash
@@ -328,8 +338,8 @@ To create a keystore you will need two certificate files from your CA (Certifica
 Each file should have the `.pem` extension.
 
 1. Verify that you have both `key.pem` and `cert.pem` in a location of your choosing.
-1. Verify that the `keytool` command is on your PATH. (If Java was installed correctly then it should be).
-1. Verify that `openssl` is installed on your system. This is a requirement, and it should be installed on CentOS by default.
+1. Verify that the `keytool` command is on your PATH (if Java was installed correctly then it should already be set). Type `keytool -list -help` and it should return a list of options.
+1. Verify that `openssl` is installed on your system. Type `openssl version` should show a version. OpenSSL is a requirement and it should already be installed.
 1. Create a pkcs12 file using your `cert.pem` and `key.pem` files:
 
     ```bash
@@ -373,7 +383,7 @@ Each file should have the `.pem` extension.
 
 ### Prepare and Configure Apache Tomcat
 
-Apache Tomcat assumes a desired installation directory of `/opt/tomcat`. This is the recommended location. If you change it, make sure you change the associated configuration and property files mentioned above.
+Apache Tomcat assumes a default installation directory of `/opt/tomcat`. This is the recommended location. If you change it, make sure you change the associated configuration and property files mentioned above.
 
 To install Apache Tomcat:
 
@@ -467,8 +477,7 @@ See the reference outlining a full OpenAM installation [here](https://backstage.
 
 1. Verify that OpenAm is installed and running before proceeding.
 1. Verify that the `JAVA_HOME` environment variable is set properly: `$ echo $JAVA_HOME` .
-1. The SSOAdminTools directory is included in the repo at the following path: `iam/config/oam/SSOAdminTools-13.0.0`.
-1. Go to the directory of the `SSOAdminTools`.
+1. `cd` to the SSOAdminTools directory which is at the following path: `iam/config/oam/SSOAdminTools-13.0.0`.
 1. Run the setup utility passing in the correct command line arguments:
 
     ```bash
@@ -489,17 +498,17 @@ See the reference outlining a full OpenAM installation [here](https://backstage.
 
     ```bash
     $ ls ./ace/bin
-    ampassword  amverifyarchive  ssoadm
+    ampassword  amverifyarchive  ssoadm  verifyarchive
     ```
 
 1. To allow the `ssoadm` command to trust certificates, add the `-D"javax.net.ssl.trustStore=/path/to/tomcat/conf/path/to/your/keystore"` option to the ssoadm script before using it. Make sure to add in the path to your actual keystore. The option should be set before the call to `com.sun.identity.cli.CommandManager` at the end of the script.
-1. Also add the trust store password to the end of the ssoadm script: `-D"javax.net.ssl.trustStorePassword=changeit"`.
-1. Verify that the file was edited correctly: `$ tail -2 ssoadm` should show the following output:
+
+1. Verify that the file was edited correctly: `$ tail -3 ssoadm` should show the following output:
 
     ```bash
-    -D"javax.net.ssl.trustStore=/opt/tomcat/.keystore" \
-    com.sun.identity.cli.CommandManager "$@"
-    ```
+   -D"javax.net.ssl.trustStore="keystore path here" \
+    -D"javax.net.ssl.trustStorePassword="keystore password here" \
+    com.sun.identity.cli.CommandManager "$@"    ```
 
 1. Verify that the `ssoadmn` command works properly:
 
@@ -672,3 +681,21 @@ This error is due to environment variables not being maintained when running the
 
 * You can also add retain the *JAVA_HOME* environment variable by adding the following line to /etc/sudoers:
   * `Defaults env_keep+="JAVA_HOME"`
+
+---
+
+#### Problem 7
+
+Running the `oam_installer.py` script results in an error that says:
+
+```Configuration Failed.  The server returned error code :500 Internal Server Error.```
+
+#### Solution 7
+
+This error could be caused if OpenAM was previously installed. Look in a root of the user that installed OpenAM previously. If you find a directory named `.openamcfg`, rename the directory and rerun the `oam_installer.py`.
+
+---
+
+#### Problem 8
+
+General debugging tip - run `tail -f /opt/tomcat/logs/catalina.out`, this will provide information about Tomcat errors.

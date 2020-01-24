@@ -46,9 +46,9 @@ define("config/ThemeConfiguration", {
                     // The alt attribute used on <img> tags.
                     alt: "ACE",
                     // The height of the logo as a CSS length.
-                    height: "204px",
+                    height: "50%",
                     // The width of the logo as a CSS length.
-                    width: "310px"
+                    width: "50%"
                 },
                 // The footer is displayed on every page.
                 footer: {
