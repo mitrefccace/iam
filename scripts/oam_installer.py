@@ -6,7 +6,20 @@ import subprocess
 import json
 from util import get_config_value
 
-default_war_file = '../config/oam/ace.war'
+
+# get base name from environment; should've been configured by user during installation
+base_name=''
+try:
+  base_name=os.environ['OPENAM_BASE_NAME']
+  print('base_name is: ' +  base_name)
+except:
+  print("*****")
+  print("ERROR!!!! please define the OPENAM_BASE_NAME environment variable")
+  print("*****")
+  sys.exit()
+
+
+default_war_file = '../config/oam/' + base_name + '.war'
 default_ssoconfig_file = '../config/oam/SSOConfiguratorTools-13.0.0/openam-configurator-tool-13.0.0.jar'
 oam_config = '../config/oam/config.properties'
 configuration_file = './oam_installer.json'
@@ -68,18 +81,18 @@ def install(mode, c):
         print('Exiting due to Tomcat Error: CATALINA_HOME is not defined')
         exit()
 
-    # copy files - sleep until ace.war is deployed
+    # copy files - sleep until war is deployed
     print('Deploying openam ....')
     sleep(35)
-    call('cp ../config/oam/DataStore.xml ' + chome + '/webapps/ace/config/auth/default_en', shell=True)
-    call('cp ../config/oam/index.html  ' + chome + '/webapps/ace/XUI', shell=True)
-    call('cp ../config/oam/ThemeConfiguration.js ' + chome + '/webapps/ace/XUI/config', shell=True)
-    call('cp ../config/oam/translation.json ' + chome + '/webapps/ace/XUI/locales/en', shell=True)
-    call('cp ../config/oam/FooterTemplate.html ' + chome + '/webapps/ace/XUI/templates/common', shell=True)
-    call('cp ../images/login-logo.png ' + chome + '/webapps/ace/XUI/images', shell=True)
-    call('cp ../images/logo-horizontal.png ' + chome + '/webapps/ace/XUI/images', shell=True)
-    call('cp ../images/favicon.ico ' + chome + '/webapps/ace/XUI', shell=True)
-    call('cp ../images/PrimaryProductName.png ' + chome + '/webapps/ace/console/images', shell=True)
+    call('cp ../config/oam/DataStore.xml ' + chome + '/webapps/' + base_name + '/config/auth/default_en', shell=True)
+    call('cp ../config/oam/index.html  ' + chome + '/webapps/' + base_name + '/XUI', shell=True)
+    call('cp ../config/oam/ThemeConfiguration.js ' + chome + '/webapps/' + base_name + '/XUI/config', shell=True)
+    call('cp ../config/oam/translation.json ' + chome + '/webapps/' + base_name + '/XUI/locales/en', shell=True)
+    call('cp ../config/oam/FooterTemplate.html ' + chome + '/webapps/' + base_name + '/XUI/templates/common', shell=True)
+    call('cp ../images/login-logo.png ' + chome + '/webapps/' + base_name + '/XUI/images', shell=True)
+    call('cp ../images/logo-horizontal.png ' + chome + '/webapps/' + base_name + '/XUI/images', shell=True)
+    call('cp ../images/favicon.ico ' + chome + '/webapps/' + base_name + '/XUI', shell=True)
+    call('cp ../images/PrimaryProductName.png ' + chome + '/webapps/' + base_name + '/console/images', shell=True)
 
     # configure
     # get the keystore file location from server.xml

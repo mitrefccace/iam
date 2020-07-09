@@ -114,7 +114,7 @@
     </Connector>
     -->
 
-     <Connector port="8081" protocol="org.apache.coyote.http11.Http11NioProtocol"
+     <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
                 sslImplementationName="org.apache.tomcat.util.net.jsse.JSSEImplementation"
                maxThreads="150"
                 scheme="https" SSLEnabled="true"

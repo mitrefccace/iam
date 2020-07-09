@@ -8,64 +8,65 @@ The installation and setup procedures described in this document are to be used 
 
 ## Prerequisites
 
-1. Install OpenAM in the `root` home or some other user.
-1. OpenAM is running behind NGINX.
-1. OpenAM has been assigned both private and public IP addresses.
+1. Install OpenAM as `root` in the `/root` home folder.
+1. OpenAM runs behind NGINX. See the `nginx` repo.
+1. OpenAM only has a private IP address. Do **not** assign it a public IP address.
 1. Certificates
 
     * Required to secure the OpenAM login process
-    * The filenames are: `cert.pem` and `key.pem`
+    * Expected filenames are: `cert.pem` and `key.pem`
+    * Copy `cert.pem` and `key.pem` to `/root/iam/ssl/`. Make sure `root` has full ownership of the files. Make sure the certificate files have the proper permissions: `chmod 644 cert.pem key.pem`
     * Acquired from a trusted certificate authority
-    * Specify a three-level fully-qualified domain name (FQDN) for the OpenAM server, for example: `test.examples.com`
-    * FQDN does *not* use underscores (_), for example, this FQDN is invalid: `my_host.domain.com`
+    * Specify a fully-qualified domain name (FQDN) for the OpenAM server that is _at least_ two levels deep. For example: `myopenam.xyz.company.com`
+    * Do **not** use underscores (`_`) in the FQDN. For example, this is **not** a valid FQDN: `my_host.domain.com`
 
-1. Root privileges are available to install the software.
-1. Running the `hostname` command returns the FQDN that aligns with the `cert.pem` and `key.pem`.
-1. Update `/etc/hosts` with the private IP, alias, and FQDN for the OpenAM and ACE Direct servers.
-1. _If the OpenAM server is running behind a network proxy_, create an entry for the `http_proxy` for wget. Depending on your operating system, it may be in `~/.wgetrc` or `/etc/wgetrc`.
+1. Execute the `hostname` command and make sure that it matches the FQDN that aligns with the certificates.
+1. Edit `/etc/hosts` to include the **private IP**, **alias**, and **FQDN** for the OpenAM, NGINX, and Node ACE Direct servers.
+1. _Note: If the OpenAM server is running behind a network proxy_, create an entry for the `http_proxy` for wget. Depending on your operating system, it may be in `~/.wgetrc` or `/etc/wgetrc`.
+1. Remove the previous Open
 
 ## Getting Started
 
-1. Clone this `iam` repository to your target OpenAM server.
-1. Verify that you have elevated privileges (`sudo`) before following this installation guide.
-1. Recommended steps:
+1. Log in as `root`.
+1. Clone this `iam` repository to the `/root` folder on the OpenAM server.
+1. Installation overview:
 
-    * Install the required software
-    * Update the configuration parameters
-    * Follow the *Automated Installation (Option 1)*
+    * Required Software Tools
+    * Configuration
+    * [Automated Installation Option 1 Recommended Method](#Automated-Installation-Option-1-Recommended-Method)
 
-## Required Software
+1. Add an environment variable for the base name of this installation. This installation assumes a base name of `ace`.
+
+  ```bash
+  $  echo "export OPENAM_BASE_NAME=ace" >> /root/.bashrc
+  $  source /root/.bashrc
+  $
+  ```
+
+## Required Software Tools
 
 Install this required software, if not present:
 
 * Python 2.7.x
-* wget
-* Java Open JDK 8 (see [Installation](#installation))
-* git
-* unzip
-* openssl
+* `wget`
+* Java Open JDK 8: `cd /root/iam/scripts; python java_installer.py`
+* `git`
+* `unzip`
+* `openssl`
 
-## Configuration Parameters
+## Configuration
 
-* The repo's main configuration file is: `iam/config/config.json`.
-* Default configurations will likely work out of the box, depending on your environment. But before attempting an automated installation, all `config.json` parameters should be set and verified.
-* Tomcat configuration files (`server.xml` and `tomcat.service`) are in: `iam/config/tomcat`.
-* The OpenAM configuration file (`config.properties`) is in: `iam/config/oam`.
+* Main configuration file: `/root/iam/config/config.json`. Default configurations will likely work out of the box, depending on your environment. Still, set/verify all `config.json` parameters.
+* Tomcat configuration files:  `/root/iam/config/tomcat/server.xml /root/iam/config/tomcat/tomcat.service`.
+* OpenAM configuration file: `/root/iam/config/oam/config.properties`.
 
 ### Global Configuration
 
-In `~/iam/config/config.json`, set/verify the Java and Tomcat versions to be installed:
-
-```json
-"common": {
-    "java": "java-1.8.0-openjdk-devel.x86_64",
-    "tomcat" : "7.0.81"
-}
-```
+Global configuration is in `/root/iam/config/config.json`. Here, you can see the `common:java` and `common:tomcat` versions, as well as other OpenAM settings.
 
 ### Apache Tomcat Configuration
 
-In `~/iam/config/config.json`, set/verify the fields below. Note that the file paths are relative to`iam/scripts/`.
+See the `apache` section of `/root/iam/config/config.json`, set the fields below or keep the default values. Note that the file paths are relative to`/root/iam/scripts/`:
 
 ```json
 "apache": {
@@ -76,77 +77,111 @@ In `~/iam/config/config.json`, set/verify the fields below. Note that the file p
     "alias": "tomcat",
     "dest_keystore_pass": "changeit",
     "keystore_path": "../ssl/.keystore",
+    "keystore_dest_path":"/opt/tomcat/.keystore",
     "tomcat_server_config":"../config/tomcat/server.xml",
-    "tomcat_service_config":"../config/tomcat/tomcat.service",
+    "tomcat_service_config":"../config/tomcat/tomcat.service"
 },
 ```
 
 Where...
 
-`cert_path`: the ssl certificate
-
-`cert_key_path`: the ssl certificate key
-
-`p12_out_filename`: the filename for the pkcs12 keystore to be imported into the jks keystore
-
-`p12_export_pass`: the export password associated with pkcs12
-
-`alias`: the alias used to identify the tomcat keystore entry
-
-`dest_keystore_pass`: the password to access the jks keystore; set 'keystorePass' in `server.xml` to this same value
-
-`keystore_path`: the initial file path for generated jks keystore - tomcat_installer will move keystore to `/opt/tomcat`
-
-`tomcat_server_config`: the location of `server.xml` in this repo
-
-`tomcat_service_config`: the location of `tomcat.service` in this repo
+* `cert_path`: the ssl certificate
+* `cert_key_path`: the ssl certificate key
+* `p12_out_filename`: the filename for the pkcs12 keystore to be imported into the jks keystore
+* `p12_export_pass`: the export password associated with pkcs12
+* `alias`: the alias used to identify the tomcat keystore entry
+* `dest_keystore_pass`: the password to access the jks keystore; set 'keystorePass' in `server.xml` to this same value
+* `keystore_path`: the initial file path for generated jks keystore
+* `keystore_dest_path`: the destination keystore path - tomcat_installer will move keystore here
+* `tomcat_server_config`: the location of `server.xml` in this repo
+* `tomcat_service_config`: the location of `tomcat.service` in this repo
 
 ### OpenAM Configuration
 
-* Download the [OpenAM 13.0 zip file](https://backstage.forgerock.com/downloads/search?q=openam%2013) and `unzip` it.
-* Rename the `OpenAM-13.0.0.war` file to `ace.war`. Use `ace.war` throughout the rest of the installation process.
-* Copy `ace.war` to `iam/config/oam/ace.war`.
+1. Log in to the OpenAM server as root.
+1. `cd /root`
+1. Download the OpenAM 13.0 zip file:
 
-Set/verify the following fields in the `~/iam/config/config.json`. Note that all of the file paths are relative to: `iam/scripts/`.
+    * [OpenAM-13.0.0.zip](https://backstage.forgerock.com/downloads/get/familyId:am/productId:openam/minorVersion:13/version:13.0.0/releaseType:full/distribution:zip). You will have to create an account and log in to download the file.
+    * FTP the file to the `/root` folder on the Open AM server. Make sure `root` has full permissions on the file.
+    * Unzip the file: `unzip OpenAM-13.0.0.zip`. This will create the `openam` folder.
+
+1. Copy the `OpenAM-13.0.0.war` file to `/root/iam/config/oam/ace.war`: `cp /root/openam/OpenAM-13.0.0.war /root/iam/config/oam/ace.war`
+
+Set/verify the following fields in the `/root/iam/config/config.json`. Note that all of the file paths are relative to: `/root/iam/scripts/`.
 
 ```json
 "oam": {
-    "ssoadm_file": "../config/oam/SSOAdminTools-13.0.0/ace/bin/ssoadm",
+    "oam_path" : ".",
+    "ssoadm_file" : "../config/oam/SSOAdminTools-13.0.0/ace/bin/ssoadm",
     "ssoconfig_file":"../config/oam/SSOConfiguratorTools-13.0.0/openam-configurator-tool-13.0.0.jar",
     "war_file" : "../config/oam/ace.war",
     "adminid": "amadmin",
-    "admin_pwd_file": "../config/oam/pwd.txt"
+    "admin_pwd_file": "../config/oam/SSOAdminTools-13.0.0/ace/bin/pwd.txt",
+    "users": [
+        {
+            "username": "dagent1",
+            "password": "Dagent1#",
+            "realm": "/",
+            "type": "User"
+        },
+        {
+            "username": "dagent2",
+            "password": "Dagent2#",
+            "realm": "/",
+            "type": "User"
+        },
+        {
+            "username": "dagent3",
+            "password": "Dagent3#",
+            "realm": "/",
+            "type": "User"
+        },
+        {
+            "username": "dagent4",
+            "password": "Dagent4#",
+            "realm": "/",
+            "type": "User"
+        },
+        {
+            "username": "dagent5",
+            "password": "Dagent5#",
+            "realm": "/",
+            "type": "User"
+        },
+        {
+            "username": "manager",
+            "password": "manager1234",
+            "realm": "/",
+            "type": "User"
+        },
+        {
+            "username": "supervisor",
+            "password": "supervisor1234",
+            "realm": "/",
+            "type": "User"
+        }
+    ]
 }
 ```
 
 Where...
 
-`ssoadm_file`: location of the ssoadm executable after completing the administration tools setup
-
-`ssoconfig_file`: location of the sso OpenAM configurator tool
-
-`war_file`: location of the original OpenAM ace deployment file
-
-`adminid`: default admin id used for admin tools
-
-`admin_pwd_file`: path to the file containing the admin password in cleartext
+* `oam_path`: OpenAM path
+* `ssoadm_file`: location of the ssoadm executable; created during administration tools setup
+* `ssoconfig_file`: location of the sso OpenAM configurator tool
+* `war_file`: location of the original OpenAM ace deployment file
+* `adminid`: default admin id used for admin tools
+* `admin_pwd_file`: path to the file containing the admin password in cleartext; created later
+* `users`: JSON array of agents to create; you may add/remove agents or modify usernames and passwords
 
 ### SSL Configuration
 
-In `~/iam/tomcat/server.xml`, set/verify the following fields:
+1. Edit `/root/iam/config/tomcat/server.xml`
+2. The SSL configuration section requires changing the port on two lines: `Line 117 and 128`. Here, the default port on both lines is `8443`:
 
-`port`: desired SSL port
-
-`keystoreFile`: path where Tomcat will look for the jks keystore
-
-`keystorePass`: password associated with your generated keystore; this should be the same value as *dest_keystore_pass* in `iam/config/config.json`
-
-`keyAlias`: name associated with the Tomcat entry within the keystore; this should be same value as *alias* in `iam/config/config.json`
-
-Set/verify the above fields in `~/iam/config/tomcat/server.xml`. They are on or near `Line 117`:
-
-```xml
-<Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+    ```xml
+    <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
         sslImplementationName="org.apache.tomcat.util.net.jsse.JSSEImplementation"
         maxThreads="150"
         scheme="https" SSLEnabled="true"
@@ -154,157 +189,262 @@ Set/verify the above fields in `~/iam/config/tomcat/server.xml`. They are on or 
         keystorePass="changeit"
         keyAlias="tomcat"
         clientAuth="false" sslProtocol="TLS" URIEncoding="UTF-8"/>
-```
+
+    <!-- Define an AJP 1.3 Connector on port 8009 -->
+    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
+    ```
+
+3. Set the following fields or accept the defaults:
+
+   * `port`: desired **SSL PORT** for OpenAM. The default is port `8443`.
+   * `keystoreFile`: path where Tomcat will look for the jks keystore. This must match the `apache:keystore_dest_path` value in `/root/iam/config/config.json`.
+   * `keystorePass`: password associated with your generated keystore; This must match the `apache:dest_keystore_pass` value in `/root/iam/config/config.json`.
+   * `keyAlias`: name associated with the Tomcat entry within the keystore; This must match the  `apache:alias` value in `/root/iam/config/config.json`
 
 ### Tomcat Service Configuration
 
-In `~/iam/config/tomcat/tomcat.service`, update the following parameters:
+1. Edit `/root/iam/config/tomcat/tomcat.service`. It will look like this:
 
-`JAVA_HOME`: absolute path of the installed openjdk-1.8.0.xx, find this easily by executing: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
+    ```bash
+    [Unit]
+    Description=Apache Tomcat Web Application Container
+    After=syslog.target network.target
 
-`JRE_HOME`: use the same value as JAVA_HOME
+    [Service]
+    Type=forking
+    Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0.el7_6.x86_64
+    Environment=JRE_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0.el7_6.x86_64
+    Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
+    Environment=CATALINA_HOME=/opt/tomcat
+    Environment=CATALINA_BASE=/opt/tomcat
+    Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
 
-Set the above fields in `~/iam/config/tomcat/tomcat.service` and verify the other fields:
+    ExecStart=/opt/tomcat/bin/startup.sh
+    ExecStop=/bin/kill -15 $MAINPID
 
-```service
-[Unit]
-Description=Apache Tomcat Web Application Container
-After=syslog.target network.target
+    User=tomcat
+    Group=tomcat
 
-[Service]
-Type=forking
-Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.el7_6.x86_64
-Environment=JRE_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.el7_6.x86_64
-Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
-Environment=CATALINA_HOME=/opt/tomcat
-Environment=CATALINA_BASE=/opt/tomcat
-Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
+    [Install]
+    WantedBy=multi-user.target
+    ```
 
-ExecStart=/opt/tomcat/bin/startup.sh
-ExecStop=/bin/kill -15 $MAINPID
+1. In the file above, **update these parameters**:
 
-User=tomcat
-Group=tomcat
-
-[Install]
-WantedBy=multi-user.target
-```
+* `JAVA_HOME`: absolute path of the installed OpenJDK version. Find this easily by executing: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
+* `JRE_HOME`: use the same value as `JAVA_HOME`
+* Verify other fields; the `/opt/tomcat` folder will be created later.
 
 ### OpenAM Properties
 
-In `~/iam/config/oam/config.properties`, update the following values:
+1. Edit `/root/iam/config/oam/config.properties`.
+1. Update the following values:
 
-`SERVER_URL`: (URL of the Tomcat Server. Make sure the port number matches the port number in server.xml. See [SSL Configuration](#ssl-configuration))
-
-* **NOTE**: URL name must NOT contain an underscore `_` and the FQDN must be _at least_ two levels deep. For example: server.example.com is valid, but example.com and example_server.host.com are NOT.
-
-`BASE_DIR`: the base directory of your OpenAM deployment
-  * For example: `/opt/tomcat/webapps/ace`
-
-`ADMIN_PWD`: 8 characters minimum
-
-`AMLDAPUSERPASSWRD`: 8 characters minimum, NOT the same as ADMIN_PWD
-
-`COOKIE_DOMAIN`: part of the SERVER_URL e.g. .example.com
-
-Set/verify the above fields and verify the other fields in the following sections of `~/iam/config/oam/config.properties`:
-
-```properties
-SERVER_URL=https://some.fqdn.com:8443
-DEPLOYMENT_URI=/ace
-BASE_DIR=/opt/tomcat/webapps/ace
-locale=en_US
-PLATFORM_LOCALE=en_US
-AM_ENC_KEY=
-ADMIN_PWD=adminpwd1
-AMLDAPUSERPASSWD=amldapass1
-COOKIE_DOMAIN=.fqdn.com
-ACCEPT_LICENSES=true
-```
-
-`DIRECTORY_SERVER`: should be the same as SERVER_URL, but _without_ the port number
-
-`DS_DIRMGRPASSWD`: 8 characters minimum, and should NOT be the same as ADMIN_PWD or AMLDAPUSERPASSWRD
-
-```properties
-DATA_STORE=embedded
-DIRECTORY_SSL=SIMPLE
-DIRECTORY_SERVER=some.fqdn.com
-DIRECTORY_PORT=50389
-DIRECTORY_ADMIN_PORT=4444
-DIRECTORY_JMX_PORT=1689
-ROOT_SUFFIX=dc=openam,dc=forgerock,dc=org
-DS_DIRMGRDN=cn=Directory Manager
-DS_DIRMGRPASSWD=dspassword1
-```
+* `SERVER_URL`: *You must update this value.* URL and port number of the Tomcat Server, for example: `https://myopenam.xyz.company.com:8443`. Use the OpenAM **FQDN** and **SSL Port Number** that you chose for this installation. The port number must match SSL port number in `server.xml`. See [SSL Configuration](#ssl-configuration)).
+* `COOKIE_DOMAIN`: *You must update this value.*. Last part of the OpenAM FQDN, for example, `.company.com`
+* `BASE_DIR`: the base directory of your OpenAM deployment.
+* `ADMIN_PWD`: 8 characters minimum.
+* `AMLDAPUSERPASSWRD`: 8 characters minimum.
+* `DIRECTORY_SERVER`: *You must update this vaue.* OpenAM FQDN, for example, `myopenam.xyz.company.com`
+* `DS_DIRMGRPASSWD`: 8 characters minimum and should NOT be the same as ADMIN_PWD or AMLDAPUSERPASSWRD.
 
 ---
 
-## Automated Installation - Option 1 (Recommended Method)
+## Automated Installation Option 1 RECOMMENDED METHOD
 
-The automated installation currently installs and configures Tomcat and OpenAM into `/opt/tomcat` for simplicity's sake. Several Python scripts facilitate the installation and configuration.
+The automated installation installs and configures Tomcat and OpenAM into `/opt/tomcat` for simplicity's sake. This is the default configuration. Several Python scripts facilitate the installation and configuration.
 
 ### Assumptions
 
-* OpenAM uses DNS (if the environment supports this configuration) for IP mapping or it uses `/etc/hosts`. The IP address in the DNS lookup must be accessible by OpenAM. Restart NGINX and OpenAM if switching from DNS to `/etc/hosts` or vice versa.
-* All configuration files have been properly updated as described in the preceding sections of this document.
-* The `key.pem` and `cert.pem` files have been moved to the `iam/ssl/` directory.
+* OpenAM uses DNS (if the environment supports this configuration) for IP mapping, or it uses `/etc/hosts`. The IP address in the DNS lookup must be accessible by OpenAM. Restart NGINX and OpenAM if switching from DNS to `/etc/hosts` or vice versa.
+* All configuration files have been properly updated as described above.
+* All prerequisites satisfied as decribed above.
 
 ### Installation
 
 Update the following files before running the Java, Tomcat, or the OAM installer programs:
 
-1. Verify/add the following lines to `~/.bashrc`:
+1. Log in as `root` on the OpenAM server.
+1. Verify/add the following lines to `~/.bashrc`. **You must update the JAVA_HOME variable** with the same JAVA_HOME value in `/root/iam/config/tomcat/tomcat.service`:
 
     ```bash
     PATH=$PATH:$HOME/bin
-    JAVA_HOME=path_to_openjdk # CHANGE path_to_openjdk to the full path to openjdk 8
+    JAVA_HOME=TODO_PATH_TO_OPENJDK  # same as JAVA_HOME value in /root/iam/config/tomcat/tomcat.service
     export JAVA_HOME
     export JAVA_OPTS="-server  -Xmx2048m -Xms128m  -XX:+UseConcMarkSweepGC -XX:+UseSerialGC"
     PATH=$PATH:$JAVA_HOME/bin
     export PATH
     ```
 
-1. Update all configuration parameters in `config.json`
-1. Update Apache `tomcat.service` and `server.xml`
-1. Update OAM `config.properties`
-1. Move **key.pem** and **cert.pem** to `iam/ssl/`
+1. Source the file: `source /root/.bashrc`
+1. Verify that you have Java: `which javac`
+1. `cd /root/iam/scripts`
+1. Generate the keystore: `python keystore.py`
+1. Install and configure Apache Tomcat: `python tomcat_installer.py -silent`
+1. Install and configure OpenAM `python oam_installer.py -silent`
+1. Verify that OpenAM is running _before_ continuing with the installation: `curl -k https://OPENAM_PRIVATE_IP:8443` . You will see the _Apache Software Foundation_ HTML page.
 
-    **Important:** Go to the `scripts` folder: `cd ~/iam/scripts` _before_ running the installation scripts and run the following commands in order as `root` or use `sudo`.
+### Set Up OpenAM Admin Tools
 
-1. Install Java if not present: `sudo python java_installer.py`
-1. Generate the keystore: `sudo python keystore.py`
-1. Find the full path to OpenJDK 8, you will need this for the next step: `echo $(dirname $(dirname $(readlink -f $(which javac))))`
+With OpenAM/Tomcat up and running...
 
-1. Now source `.bashrc` to set the environment and ensure no errors:: `source ~/.bashrc`
-1. Install and configure Apache Tomcat `sudo python tomcat_installer.py -silent`
-1. Install and configure OpenAM `sudo python oam_installer.py -silent`
-1. Verify your configuration parameters for the OpenAM users to be created in `iam/config/config.json`
-1. Create the OpenAM users (you may optionally use the OpenAM web-based GUI and skip this step):
+1. Run the setup utility to install the OpenAM Admin Tools:
 
-   * Completely follow the [Administration Tools Setup](#administration-tools-setup) directions in the [Manual Installation](#manual-installation---option-2) section in the second half of this guide.
-   * Verify that the variable `admin_pwd_file` in `iam/config/config.json` points to the newly created `pwd.txt`.
-   * Create your OpenAM users with the following command: `sudo python create_users.py`
+  ```bash
+  $  cd /root/iam/config/oam/SSOAdminTools-13.0.0
+  $
+  $  sudo -E bash setup -p /opt/tomcat/webapps/ace -l ./log -d ./debug --acceptLicense
+  $  
+  ```
 
-1. Verify that the OpenAM software is installed and configured:
+1. After the setup utility runs successfully, the administration tools will be in `/root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin`:
 
-    * Enter the following URL on the browser if it is not behind a proxy server:
+    ```bash
+    $ cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+    $ ls
+    ampassword  amverifyarchive  ssoadm  verifyarchive
+    ```
 
-    `https://<FQDN>:<port>/ace`  e.g. `https://some.fqdn.com:8443/ace`
+1. Modify the `ssoadm` script to include the keystore information. This must match the `apache:keystore_path` and `apache:dest_keystore_pass` values in `/root/iam/config/config.json`. If using the default installation as specified above, simply **add** the two new `-D` lines just before the last `CommandManager` line of the script. If done correctly, the last three lines of `ssoadm` will be:
 
-    * Use `curl` from the command prompt: `curl -k https://OPENAM_PRIVATE_IP:8443  # drop the ace`
+  ```bash
+      -D"javax.net.ssl.trustStore="/root/iam/ssl/.keystore" \
+      -D"javax.net.ssl.trustStorePassword="changeit" \
+      com.sun.identity.cli.CommandManager "$@"
+  ```
 
-1. The ACE login page should appear in the browser OR in the console output, depending on which test method you used.
+1. Set up `ssoadmn`:
 
-1. Remember the `oam.adminid` value and `oam.admin_pwd_file` contents (see `iam/config/config.json`). You will need these values to update your Node server `dat/config.json` `openam.user` and `openam.password` fields. ACE Direct needs this credentials to maintain agent info.
+    * Create the `pwd.txt` file `touch /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin/pwd.txt`
+    * Edit the `pwd.txt` file and add the value of the `ADMIN_PWD` variable in `/root/iam/config/oam/config.properties` in clear text on a single line.
+    * Make the text file read-only: `chmod 400 /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin/pwd.txt`
+    * Note that `/root/iam/config/config.json` requires, but already has this default, relative location of `pwd.txt`.
 
-This completes the OpenAM installation and configuration.
+1. Verify that the `ssoadmn` command works properly:
 
-**Note: to auto-install the software interactively (with prompts for input):**
+  ```bash
+  $  cd  /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+  $
+  $  ./ssoadm list-servers -u amadmin -f pwd.txt  # outputs your OpenAM URL if successful
+  ```
 
-1. Execute the above commands _without_ the silent flag (`-silent`).
-2. Update all configuration properties when prompted. The files will be opened in the `vim` editor. Save the file when you are finished editing (`Escape :wq`).
-3. Parameters that should be updated are marked with  "UPDATE" in the comment fields
+1. Create the OpenAM agents/users:
+
+  ```bash
+  $  cd /root/iam/scripts
+  $
+  $  python create_users.py  # this will add agents one by one
+  ```
+
+1. Take note of the `oam.adminid` value and `oam.admin_pwd_file` values in `/root/iam/config/config.json`. You will need these values to configure your ACE Direct Node server. The configuration file is `~/dat/config.json` and the variables are `openam.user` and `openam.password`. The ACE Direct Management Portal needs this to maintain agent info.
+
+### NGINX Configuration
+
+In ACE Direct, OpenAM is hidden behind NGINX. For this installation of OpenAM, you will need this exact entry on your NGINX server:
+
+```bash
+location /ace {
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_pass https://myopenam.xyz.company.com:8443;
+    proxy_set_header Host myopenam.xyz.company.com:8443;
+}
+```
+
+The NGINX route `/ace` **must match** the base name `ace` in this installation.
+
+**This completes the OpenAM installation and configuration.** :checkered_flag: :trophy:
+
+### Reinstallation of OpenAM (optional)
+
+You may need to reinstall OpenAM after installation errors. Or if there was a previous installation of OpenAM or Tomcat, then it would be wise to reinstall cleanly.
+
+To reinstall OpenAM, remove the `tomcat` user and delete the `tomcat` folder before repeating installing again:
+
+```bash
+$  service tomcat stop
+$
+$  userdel -r tomcat
+$  rm -rf /opt/tomcat
+$  cd /root/iam/scripts
+$  python keystore.py
+$  python tomcat_installer.py -silent
+$  python oam_installer.py -silent
+```
+
+### Reinstallation With Custom Base (optional)
+
+You may need a custom base name if you have a specific NGINX route for OpenAM. Follow these reinstallation instructions if you need to change the base name from `ace` to something else. This following instructions assume going from the default `ace` base namce to a new base name of `ace2`.
+
+1. Start clean:
+
+  ```bash
+  $  service tomcat stop
+  $
+  $  userdel -r tomcat
+  $  rm -rf /opt/tomcat
+  ```
+
+1. Update the base name environment variable to be `ace2`. Edit this entry in `/root/.bashrc`:
+
+  ```bash
+  export OPENAM_BASE_NAME=ace2
+  ```
+
+1. Now source the new environment: `source /root/.bashrc`
+
+2. After unzipping `OpenAM-13.0.0.zip` in the [OpenAM Configuration](#OpenAM-Configuration) step, copy the `.war` file to the new base name: `cp /root/openam/OpenAM-13.0.0.war /root/iam/config/oam/ace2.war`
+
+3. Update two variables in `/root/iam/config/oam/config.properties`:
+
+  ```bash
+  DEPLOYMENT_URI=/ace2
+  BASE_DIR=/opt/tomcat/webapps/ace2
+  ```
+
+1. Change three values in `/root/iam/config/config.json` from `ace` to `ace2`:
+
+```bash
+"oam": {
+    "oam_path" : ".",
+    "ssoadm_file" : "../config/oam/SSOAdminTools-13.0.0/ace2/bin/ssoadm",
+    "ssoconfig_file":"../config/oam/SSOConfiguratorTools-13.0.0/openam-configurator-tool-13.0.0.jar",
+    "war_file" : "../config/oam/ace2.war",
+    "adminid": "amadmin",
+    "admin_pwd_file": "../config/oam/SSOAdminTools-13.0.0/ace2/bin/pwd.txt",
+.
+.
+.
+```
+
+1. Reinstall:
+
+  ```bash
+  $  cd /root/iam/scripts
+  $
+  $  python keystore.py
+  $  python tomcat_installer.py -silent
+  $  python oam_installer.py -silent
+  ```
+
+1. Continue with [Set Up OpenAM Admin Tools](#Set-Up-OpenAM-Admin-Tools) below, but when executing commands, use the new working folders in commands and folder references:
+
+  ```bash
+  /opt/tomcat/webapps/ace
+  /root/iam/config/oam/SSOAdminTools-13.0.0/ace
+  ```
+
+1. See [NGINX Configuration](#NGINX-Configuration). Note that `/ace` should now be `/ace2`. Each OpenAM instance in NGINX must have a unique route, and this unique route name must be the base name of the OpenAM installation (e.g., `/ace2`).
+
+### Interactive Installation (optional)
+
+For the installation scripts, you may opt to use an interactive installation. This will prompt you to edit files duiring the installation process.
+
+To install OpenAM interactively:
+
+1. Execute the above installation scripts _without_ the silent flag (`-silent`).
+1. Update all configuration properties when prompted. The files will open in a `vi` editor.
+1. Manually find and update fields with marked with `UPDATE` in the comment fields.
+1. Save the files.
 
 ---
 
@@ -693,6 +833,14 @@ Running the `oam_installer.py` script results in an error that says:
 #### Solution 7
 
 This error could be caused if OpenAM was previously installed. Look in a root of the user that installed OpenAM previously. If you find a directory named `.openamcfg`, rename the directory and rerun the `oam_installer.py`.
+
+Another cause of this error is existence of a `tomcat` user from a previous installation. Delete that `tomcat` user and the `tomcat` folder and try again:
+
+```bash
+$  userdel -r tomcat
+$
+$  rm -rf /opt/tomcat
+```
 
 ---
 
