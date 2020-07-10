@@ -355,7 +355,7 @@ With OpenAM/Tomcat up and running...
   $
   $  ./ssoadm list-servers -u amadmin -f pwd.txt  # if successful, OpenAM URL is shown
   https://myopenam.xyz.company.com:8443/ace
-  $  # if you see an error here, try again
+  $  # you may see an error; if so this could be an indication of low disk space
   ```
 
 1. Create the OpenAM agents/users:
@@ -396,17 +396,20 @@ After updating the NGINX configuration and restarting NGINX. Assuming the public
 
 You may need to reinstall OpenAM after installation errors. Or if there was a previous installation of OpenAM or Tomcat, then it would be wise to reinstall cleanly.
 
-To reinstall OpenAM, remove the `tomcat` user and delete the `tomcat` folder before repeating installing again:
+To reinstall OpenAM, remove the `tomcat` user, delete the `tomcat` folder, and clean up before reinstalling:
 
 ```bash
-$  service tomcat stop
-$
+$  service tomcat stop  
+$  ps -aef | grep tomcat # make sure it is really killed
 $  userdel -r tomcat
 $  rm -rf /opt/tomcat
+$  rm -rf /etc/systemd/system/tomcat.service
 $  cd /root/iam/scripts
+$  rm /root/iam/ssl/.keystore  # remove keystore in case corrupt
 $  python keystore.py
 $  python tomcat_installer.py -silent
 $  python oam_installer.py -silent
+$
 ```
 
 Then, repeat [Set Up OpenAM Admin Tools](#Set-Up-OpenAM-Admin-Tools).
@@ -886,6 +889,10 @@ $
 $  rm -rf /opt/tomcat
 ```
 
+See the installation log file `/opt/tomcat/webapps/ace1/install.log` for errors. Low disk space could be the cause. If so, increase disk space.
+
+See the tomcat log files in  `/opt/tomcat/logs` for errors.
+
 ---
 
 #### Problem 8
@@ -906,7 +913,7 @@ Make sure the OpenAM NGINX route in `/etc/nginx/nginx.conf` matches the base nam
 
 #### Problem 10
 
-Access error when accessing OpenAM or ACE Direct through the browser. You see a web page that says `UNABLE TO LOGIN TO OPENAM`.
+Access error when accessing OpenAM or ACE Direct through the browser. You may see a web page that says `UNABLE TO LOGIN TO OPENAM`. You may receive an NGINX error page `nginx error! - The page you are looking for is temporarily unavailable. Please try again later.`
 
 #### Solution 10
 
@@ -919,6 +926,21 @@ $  openssl x509 -enddate -noout -in cert.pem
 $
 ```
 
-If the certs are expired, update the certs in `/root/iam/ssl` then follow the reinstallation instructions: [Reinstallation of OpenAM (optional)](#Reinstallation-of-OpenAM-(optional)).
+If the certs are expired, update the certs in `/root/iam/ssl` then follow these instructions:
+
+```bash
+$  sudo su - root
+$  service tomcat stop
+$  ps -aef | grep tomcat  # make sure tomcat is stopped
+$  rm /root/iam/ssl/.keystore  # remove local keystore in case corrupt
+$  rm /opt/tomcat/.keystore  # remove working keystore to
+$  cd /root/iam/scripts
+$  python keystore.py
+$  cp -p ../ssl/.keystore /opt/tomcat/.keystore
+$  service tomcat start
+$  # on your NGINX servfer, restart nginx
+$  # on your ACE Direct Node server, restart ACE Direct node servers
+$
+```
 
 ---
