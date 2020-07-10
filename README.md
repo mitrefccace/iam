@@ -890,6 +890,8 @@ $  rm -rf /opt/tomcat
 
 General debugging tip - run `tail -f /opt/tomcat/logs/catalina.out`, this will provide information about Tomcat errors.
 
+---
+
 #### Problem 9
 
 NGINX is returning a page not found error when trying to access OpenAM URL from the browser.
