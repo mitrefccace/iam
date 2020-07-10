@@ -355,7 +355,7 @@ With OpenAM/Tomcat up and running...
   $
   $  ./ssoadm list-servers -u amadmin -f pwd.txt  # if successful, OpenAM URL is shown
   https://myopenam.xyz.company.com:8443/ace
-  $
+  $  # if you see an error here, try again
   ```
 
 1. Create the OpenAM agents/users:
@@ -382,7 +382,7 @@ location /ace {
 
 The NGINX route `/ace` **must match** the base name `ace` in this installation.
 
-**Note:** whenever OpenAM restarts, you **must** restart NGINX.
+**Note:** whenever OpenAM restarts, you **must** restart NGINX, and you should restart all ACE Direct Node.js servers. All in this order.
 
 ### Testing OpenAM With NGINX
 
@@ -408,6 +408,8 @@ $  python keystore.py
 $  python tomcat_installer.py -silent
 $  python oam_installer.py -silent
 ```
+
+Then, repeat [Set Up OpenAM Admin Tools](#Set-Up-OpenAM-Admin-Tools).
 
 ### Tomcat Upgrade
 
@@ -899,5 +901,24 @@ NGINX is returning a page not found error when trying to access OpenAM URL from 
 #### Solution 9
 
 Make sure the OpenAM NGINX route in `/etc/nginx/nginx.conf` matches the base name of this installation. For example, `/ace` <==> `ace`.
+
+---
+
+#### Problem 10
+
+Access error when accessing OpenAM or ACE Direct through the browser. You see a web page that says `UNABLE TO LOGIN TO OPENAM`.
+
+#### Solution 10
+
+Check if your original installation certs in `/root/iam/ssl` have expired:
+
+```bash
+$  cd /root/iam/ssl
+$    # note the expiration date of this command. if expire, both cert.pem and key.pem must be updated
+$  openssl x509 -enddate -noout -in cert.pem
+$
+```
+
+If the certs are expired, update the certs in `/root/iam/ssl` then follow the reinstallation instructions: [Reinstallation of OpenAM (optional)](#Reinstallation-of-OpenAM-(optional)).
 
 ---
