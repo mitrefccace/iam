@@ -889,3 +889,11 @@ $  rm -rf /opt/tomcat
 #### Problem 8
 
 General debugging tip - run `tail -f /opt/tomcat/logs/catalina.out`, this will provide information about Tomcat errors.
+
+#### Problem 9
+
+NGINX is returning a page not found error when trying to access OpenAM URL from the browser.
+
+#### Solution 9
+
+Make sure the OpenAM NGINX route in `/etc/nginx/nginx.conf` matches the base name of this installation. For example, `/ace` <==> `ace`.
