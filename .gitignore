@@ -12,3 +12,4 @@ scripts/debug
 scripts/log
 .DS_Store
 ace.war
+*.war

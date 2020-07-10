@@ -280,7 +280,7 @@ The automated installation installs and configures Tomcat and OpenAM into `/opt/
 * OpenAM uses DNS (if the environment supports this configuration) for IP mapping, or it uses `/etc/hosts`. The IP address in the DNS lookup must be accessible by OpenAM. Restart NGINX and OpenAM if switching from DNS to `/etc/hosts` or vice versa.
 * All configuration files have been properly updated as described above.
 * All prerequisites satisfied as decribed above.
-* Assumes the base name of `ace`. This is seen in folder and file names in commands below. If you changed the base name, **you will have to update the names in the commands below before executing them**. 
+* Assumes the base name of `ace`. This is seen in folder and file names in commands below. If you changed the base name, **you will have to update the names in the commands below before executing them**.
 
 ### Installation
 
@@ -328,7 +328,7 @@ With OpenAM/Tomcat up and running...
 1. After the setup utility runs successfully, the administration tools will be in `/root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin`:
 
     ```bash
-    $ cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin 
+    $ cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
     $ ls
     ampassword  amverifyarchive  ssoadm  verifyarchive
     ```
@@ -408,6 +408,10 @@ $  python keystore.py
 $  python tomcat_installer.py -silent
 $  python oam_installer.py -silent
 ```
+
+### Tomcat Upgrade
+
+Need to update Tomcat? Just update the `common:tomcat` value in `/root/iam/config/config.json` and reinstall OpenAM.
 
 ### Reinstallation With Custom Base (optional)
 

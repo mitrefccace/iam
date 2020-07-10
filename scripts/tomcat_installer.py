@@ -7,8 +7,6 @@ import json
 from util import get_config_value
 from util import get_input
 
-configuration_file = './oam_installer.json'
-default_version = '7.0.81'
 default_server_config = '../config/tomcat/server.xml'
 default_service_config = '../config/tomcat/tomcat.service'
 lvl = 'apache'
