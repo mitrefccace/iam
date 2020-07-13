@@ -882,9 +882,13 @@ Running the `oam_installer.py` script results in an error that says:
 
 #### Solution 7
 
-This error could be caused if OpenAM was previously installed. Look in a root of the user that installed OpenAM previously. If you find a directory named `.openamcfg`, rename the directory and rerun the `oam_installer.py`.
+##### Previous OpenAM exists
 
-Another cause of this error is existence of a `tomcat` user from a previous installation. Delete that `tomcat` user and the `tomcat` folder and try again:
+This error could be caused if OpenAM was previously installed. Look in the home folder of a user that installed OpenAM previously. If you find a directory named `.openamcfg`, rename the directory and rerun the `oam_installer.py`.  See the installation log file `/opt/tomcat/webapps/ace1/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors.
+
+##### A tomcat users already exists
+
+Another cause of this error is existence of a `tomcat` user from a previous installation.  See the installation log file `/opt/tomcat/webapps/ace1/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors. Delete that `tomcat` user and the `tomcat` folder and try again:
 
 ```bash
 $  userdel -r tomcat
@@ -892,9 +896,9 @@ $
 $  rm -rf /opt/tomcat
 ```
 
-See the installation log file `/opt/tomcat/webapps/ace1/install.log` for errors. Low disk space could be the cause. If so, increase disk space.
+##### Low disk space
 
-See the tomcat log files in  `/opt/tomcat/logs` for errors.
+Low disk space will prevent OpenAM from deploying. Make sure the disk has sufficient disk space to run OpenAM. See the installation log file `/opt/tomcat/webapps/ace1/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors.
 
 ---
 
