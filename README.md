@@ -341,21 +341,22 @@ With OpenAM/Tomcat up and running...
       com.sun.identity.cli.CommandManager "$@"
   ```
 
-1. Set up `ssoadmn`:
-
-    * Create the `pwd.txt` file `touch /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin/pwd.txt`
-    * Edit the `pwd.txt` file and add the value of the `ADMIN_PWD` variable in `/root/iam/config/oam/config.properties` in clear text on a single line. If using the default password, simply execute `echo password1 > /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin/pwd.txt`
-    * Make the text file read-only: `chmod 400 /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin/pwd.txt`
-    * Note that `/root/iam/config/config.json` requires, but already has this default, relative location of `pwd.txt`.
-
-1. Verify that the `ssoadmn` command works properly:
+1. Set up and verify `ssoadmn`:
 
   ```bash
   $  cd  /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+  $  touch pwd.txt  # create password file in the default location
   $
-  $  ./ssoadm list-servers -u amadmin -f pwd.txt  # if successful, OpenAM URL is shown
-  https://myopenam.xyz.company.com:8443/ace
-  $  # you may see an error; if so this could be an indication of low disk space
+  $  # get value of ADMIN_PWD in /root/iam/config/oam/config.properties. add it to pwd.txt
+  $  vi pwd.txt  # put ADMIN_PWD on one line here
+  $  echo password1 > pwd.txt  # if using the default password
+  $  chmod 400 pwd.txt  # change permissions
+  $
+  $  # run ssoadm to verify it
+  $  ./ssoadm list-servers -u amadmin -f pwd.txt  
+  $  # if successful, OpenAM URL is shown: https://myopenam.xyz.company.com:8443/ace
+  $  # if error, the disk may be full
+  $
   ```
 
 1. Create the OpenAM agents/users:
@@ -404,11 +405,13 @@ $  ps -aef | grep tomcat # make sure it is really killed
 $  userdel -r tomcat
 $  rm -rf /opt/tomcat
 $  rm -rf /etc/systemd/system/tomcat.service
-$  cd /root/iam/scripts
 $  rm /root/iam/ssl/.keystore  # remove keystore in case corrupt
+$  rm /root/iam/ssl/cert.p12
+$  cd /root/iam/scripts
 $  python keystore.py
 $  python tomcat_installer.py -silent
 $  python oam_installer.py -silent
+$  # set up OpenAM tools and add users. See below...
 $
 ```
 
@@ -934,6 +937,7 @@ $  service tomcat stop
 $  ps -aef | grep tomcat  # make sure tomcat is stopped
 $  rm /root/iam/ssl/.keystore  # remove local keystore in case corrupt
 $  rm /opt/tomcat/.keystore  # remove working keystore to
+$  rm /root/iam/ssl/cert.p12
 $  cd /root/iam/scripts
 $  python keystore.py
 $  cp -p ../ssl/.keystore /opt/tomcat/.keystore

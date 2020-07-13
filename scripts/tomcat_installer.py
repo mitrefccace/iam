@@ -41,9 +41,9 @@ def install(mode, c):
 
     print('Installing Tomcat version ' + version)
 
-    subprocess.call('groupadd tomcat ', shell=True)
+    subprocess.call('groupadd tomcat  >/dev/null 2>&1 ', shell=True)
     subprocess.call(
-        'useradd -s /bin/nologin -g tomcat -d /opt/tomcat tomcat ', shell=True)
+        'useradd -s /bin/nologin -g tomcat -d /opt/tomcat tomcat  >/dev/null 2>&1 ', shell=True)
     major_version = version.split('.')[0]
     tar_name = 'apache-tomcat-' + version
     subprocess.call(
