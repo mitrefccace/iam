@@ -367,6 +367,14 @@ With OpenAM/Tomcat up and running...
   $  python create_users.py  # this will add agents one by one
   ```
 
+1. Restrict GOTO URLs in OpenAM. This prevents a URL redirect to a different web page. Assuming the public FQDN of the NGINX server is `portal.domain.com`:
+
+  ```bash
+  $  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+  $  ./ssoadm set-attr-defs -s validationService -t organization -u amadmin -f pwd.txt -a openam-auth-valid-goto-resources="https://portal.domain.com/*" openam-auth-valid-goto-resources="https://portal.domain.com/*?*"
+  $
+  ```
+
 1. Take note of the `oam.adminid` value and `oam.admin_pwd_file` values in `/root/iam/config/config.json`. You will need these values to configure your ACE Direct Node server. The configuration file is `~/dat/config.json` and the variables are `openam.user` and `openam.password`. The ACE Direct Management Portal needs this to maintain agent info.
 
 ### NGINX Configuration
@@ -706,6 +714,14 @@ See the reference outlining a full OpenAM installation [here](https://backstage.
     * Make the text file read-only:  `sudo chmod 400 pwd.txt`
     * Run the `ssoadm` command to list the configured servers to verify that `ssoadm` is working (putting in the correct path to your newly created pwd.txt file): `$ sudo ./ssoadm list-servers -u amadmin -f /path/to/pwd.txt` . If the command executed successfully, you should see the full URL of your deployed OpenAM configuration.
 
+1. Restrict GOTO URLs in OpenAM. This prevents a URL redirect to a different web page. Assuming the public FQDN of the NGINX server is `portal.domain.com`:
+
+  ```bash
+  $  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+  $  ./ssoadm set-attr-defs -s validationService -t organization -u amadmin -f pwd.txt -a openam-auth-valid-goto-resources="https://portal.domain.com/*" openam-auth-valid-goto-resources="https://portal.domain.com/*?*"
+  $
+  ```
+
 #### Creating Users
 
 Users can be created using the `ssoadm` administration tool used in the previous section:
@@ -949,6 +965,40 @@ $  service tomcat start
 $  # on your NGINX servfer, restart nginx
 $  # on your ACE Direct Node server, restart ACE Direct node servers
 $
+```
+
+---
+
+#### Problem 11
+
+OpenAM is already installed and running, but it is necessary to change the OpenAM admin password.
+
+#### Solution 11
+
+Change the OpenAM password:
+
+* Assuming the new password is `password2`, admin username is `amadmin`, and the current password is in the `pwd.txt` file...
+
+```bash
+$  # log into OpenAM server as root
+$  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+$  ./ssoadm set-identity-attrs -t User -e / -i amAdmin -u amadmin -f pwd.txt -a userpassword=password2
+$
+$  chmod 755 pwd.txt
+$  echo password2 > pwd.txt
+$  chmod 400 pwd.txt
+$
+$  # test out new password
+$  ./ssoadm list-servers -u amadmin -f pwd.txt
+$
+```
+
+Now update the `openam:password` value in `dat/config.json` on the ACE Direct server, with the new OpenAM admin password:
+
+```bash
+"openam": {
+    ...
+    "password": "password2
 ```
 
 ---
