@@ -979,21 +979,22 @@ Change the OpenAM password:
 
 * Assuming the new password is `password2`, admin username is `amadmin`, and the current password is in the `pwd.txt` file...
 
-```bash
-$  # log into OpenAM server as root
-$  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
-$  ./ssoadm set-identity-attrs -t User -e / -i amAdmin -u amadmin -f pwd.txt -a userpassword=password2
-$
-$  chmod 755 pwd.txt
-$  echo password2 > pwd.txt
-$  chmod 400 pwd.txt
-$
-$  # test out new password
-$  ./ssoadm list-servers -u amadmin -f pwd.txt
-$
-```
+    ```bash
+    $  # log into OpenAM server as root
+    $  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+    $  ./ssoadm set-identity-attrs -t User -e / -i amAdmin -u amadmin -f pwd.txt -a userpassword=password2
+    $
+    $  chmod 755 pwd.txt
+    $  echo password2 > pwd.txt
+    $  chmod 400 pwd.txt
+    $
+    $  # test out new password
+    $  ./ssoadm list-servers -u amadmin -f pwd.txt
+    $
+    ```
 
-Now update the `openam:password` value in `dat/config.json` on the ACE Direct server, with the new OpenAM admin password:
+* Update the value for `ADMIN_PWD` in `/root/iam/config/oam/config.properties` to reflect the new OpenAM admin password, in case of a future reinstallation.
+* Update the `openam:password` value in `dat/config.json` on the ACE Direct server, with the new OpenAM admin password, and restart the Node servers:
 
 ```bash
 "openam": {
