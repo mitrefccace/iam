@@ -1017,7 +1017,7 @@ Change the OpenAM password:
 
 #### Problem 12
 
-ACE Direct agents and managers redirect to the OpenAM login page instead of ACE Direct.
+ACE Direct agents and managers redirect to the OpenAM login page instead of ACE Direct. ACE Direct agent and manager cannot log in on the same laptop.
 
 #### Solution 12
 
