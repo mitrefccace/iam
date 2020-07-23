@@ -316,62 +316,75 @@ With OpenAM/Tomcat up and running...
 
 1. Run the setup utility to install the OpenAM Admin Tools:
 
-  ```bash
-  $  cd /root/iam/config/oam/SSOAdminTools-13.0.0
-  $
-  $  sudo -E bash setup -p /opt/tomcat/webapps/ace -l ./log -d ./debug --acceptLicense  
-  $  
-  ```
+    ```bash
+    $  cd /root/iam/config/oam/SSOAdminTools-13.0.0
+    $
+    $  sudo -E bash setup -p /opt/tomcat/webapps/ace -l ./log -d ./debug --acceptLicense  
+    $  
+    ```
 
 1. After the setup utility runs successfully, the administration tools will be in `/root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin`:
 
-  ```bash
-  $ cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
-  $ ls
-  ampassword  amverifyarchive  ssoadm  verifyarchive
-  ```
+    ```bash
+    $ cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+    $ ls
+    ampassword  amverifyarchive  ssoadm  verifyarchive
+    ```
 
 1. *Modify* the `ssoadm` script to include the keystore information. This must match the `apache:keystore_path` and `apache:dest_keystore_pass` values in `/root/iam/config/config.json`. If using the default installation as specified above, simply **add** the two new `-D` lines just before the last `CommandManager` line of the script. If done correctly, the last three lines of `ssoadm` will be:
 
-  ```bash
-      -D"javax.net.ssl.trustStore="/root/iam/ssl/.keystore" \
-      -D"javax.net.ssl.trustStorePassword="changeit" \
-      com.sun.identity.cli.CommandManager "$@"
-  ```
+    ```bash
+        -D"javax.net.ssl.trustStore="/root/iam/ssl/.keystore" \
+        -D"javax.net.ssl.trustStorePassword="changeit" \
+        com.sun.identity.cli.CommandManager "$@"
+    ```
 
 1. Set up and verify `ssoadmn`:
 
-  ```bash
-  $  cd  /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
-  $  touch pwd.txt  # create password file in the default location
-  $
-  $  # get value of ADMIN_PWD in /root/iam/config/oam/config.properties. add it to pwd.txt
-  $  vi pwd.txt  # put ADMIN_PWD on one line here
-  $  echo password1 > pwd.txt  # if using the default OpenAM Admin password
-  $  chmod 400 pwd.txt  # change permissions
-  $
-  $  # run ssoadm to verify it
-  $  ./ssoadm list-servers -u amadmin -f pwd.txt  
-  $  # if successful, OpenAM URL is shown: https://myopenam.xyz.company.com:8443/ace
-  $  # if error, the disk may be full
-  $
-  ```
+    ```bash
+    $  cd  /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+    $  touch pwd.txt  # create password file in the default location
+    $
+    $  # get value of ADMIN_PWD in /root/iam/config/oam/config.properties. add it to pwd.txt
+    $  vi pwd.txt  # put ADMIN_PWD on one line here
+    $  echo password1 > pwd.txt  # if using the default OpenAM Admin password
+    $  chmod 400 pwd.txt  # change permissions
+    $
+    $  # run ssoadm to verify it
+    $  ./ssoadm list-servers -u amadmin -f pwd.txt  
+    $  # if successful, OpenAM URL is shown: https://myopenam.xyz.company.com:8443/ace
+    $  # if error, the disk may be full
+    $
+    ```
 
 1. Create the OpenAM agents/users:
 
-  ```bash
-  $  cd /root/iam/scripts
-  $
-  $  python create_users.py  # this will add agents one by one
-  ```
+    ```bash
+    $  cd /root/iam/scripts
+    $
+    $  python create_users.py  # this will add agents one by one
+    ```
 
 1. Security requirement - restrict GOTO URLs in OpenAM. This prevents a URL redirect to a different web page. Assuming the public FQDN of the NGINX server is `portal.domain.com`:
 
-  ```bash
-  $  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
-  $  ./ssoadm set-attr-defs -s validationService -t organization -u amadmin -f pwd.txt -a openam-auth-valid-goto-resources="https://portal.domain.com/*" openam-auth-valid-goto-resources="https://portal.domain.com/*?*"
-  $
-  ```
+    ```bash
+    $  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+    $  ./ssoadm set-attr-defs -s validationService -t organization -u amadmin -f pwd.txt -a openam-auth-valid-goto-resources="https://portal.domain.com/*" openam-auth-valid-goto-resources="https://portal.domain.com/*?*"
+    $
+    ```
+
+1. Configure success login URLs - each user (e.g. `dagent1`, `dagent2`, ... , `manager`, ...) should have a designated URL to go to upon successful login. This sets up the URL that agents and managers navigate to upon successful login:
+
+    * From a web browser, log into OpenAM admin: [https://portal.domain.com/ace/XUI/](https://portal.domain.com/ace/XUI/)
+    * Click _Top Level Realm_.
+    * Click _Subjects_.
+    * Click an agent _User_ (e.g., `dagent1`, `dagent2`).
+    * Scroll down to _Success URL_.
+    * Add a success URL for an agent: [https://portal.domain.com/ACEDirect/agent](https://portal.domain.com/ACEDirect/agent))
+    * Click _Add_.
+    * Scroll to the top and click _Save_ and _Back to Subjects_.
+    * Repeat above for all agent usernames.
+    * Repeat above for the `manager` and `supervisor` users, but use the success URL: [https://portal.domain.com/ManagementPortal](https://portal.domain.com/ManagementPortal).
 
 1. Take note of the `oam.adminid` value and `oam.admin_pwd_file` values in `/root/iam/config/config.json`. You will need these values to configure your ACE Direct Node server. The configuration file is `~/dat/config.json` and the variables are `openam.user` and `openam.password`. The ACE Direct Management Portal needs this to maintain agent info.
 
@@ -1001,3 +1014,14 @@ Change the OpenAM password:
 ```
 
 ---
+
+#### Problem 12
+
+ACE Direct agents and managers redirect to the OpenAM login page instead of ACE Direct.
+
+#### Solution 12
+
+Configure the successful login URLs for agents and managers. See the _Configure success login URLs_ section above.
+
+---
+
