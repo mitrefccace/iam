@@ -373,6 +373,19 @@ With OpenAM/Tomcat up and running...
     $
     ```
 
+1. Session timeouts - if you need to change the maximum session and idle timeouts:
+
+    ```bash
+    $  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
+    $  
+    $  # configure the maximum session time to be 600 minutes (e.g.). Default is 120 minutes.
+    $  ./ssoadm set-attr-defs -s iPlanetAMSessionService -t dynamic -u amadmin -f pwd.txt -a iplanet-am-session-max-session-time=600
+    $  
+    $  # configure the maximum idle time to be 600 minutes (e.g.). Default is 30 minutes.
+    $  ./ssoadm set-attr-defs -s iPlanetAMSessionService -t dynamic -u amadmin -f pwd.txt -a iplanet-am-session-max-idle-time=600
+    $
+    ```
+
 1. Configure success login URLs - each user (e.g. `dagent1`, `dagent2`, ... , `manager`, ...) should have a designated URL to go to upon successful login. This sets up the URL that agents and managers navigate to upon successful login:
 
     * From a web browser, log into OpenAM admin: [https://portal.domain.com/ace/XUI/](https://portal.domain.com/ace/XUI/)
