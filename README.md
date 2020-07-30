@@ -1038,3 +1038,19 @@ Configure the successful login URLs for agents and managers. See the _Configure 
 
 ---
 
+#### Problem 14
+
+During OpenAM configuration, executing `ssoadm` causes the following error:
+
+```bash
+$  ./ssoadm list-servers -u amadmin -f pwd.txt
+
+Logging configuration class "com.sun.identity.log.s1is.LogConfigReader" failed
+com.sun.identity.security.AMSecurityPropertiesException: AdminTokenAction: FATAL ERROR: Cannot obtain Application SSO token.
+```
+
+#### Solution 14
+
+Resolution: it is likely that the certificates in `/root/iam/ssl/` are expired or invalid. Make sure `cert.pem` and `key.pem` are valid, not expired, and have appropriate permissions.
+
+---
