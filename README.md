@@ -260,8 +260,8 @@ Where...
 
    * `SERVER_URL`: *You must update this value.* Use the OpenAM **FQDN** and **SSL Port Number** that you chose for this installation, for example: `https://myopenam.xyz.company.com:8443`. The port number must match SSL port number in `server.xml`. See [SSL Configuration](#ssl-configuration)).
    * `COOKIE_DOMAIN`: *You must update this value.*. Last part of the OpenAM FQDN, for example, `.company.com`
-   * `DEPLOYMENT_URI`: If you modified the base name for this installation, change this value to reflect that, for example: `/ace1`
-   * `BASE_DIR`: the base directory of your OpenAM deployment. If you modified the base name for this installation, change this value to reflect that, for example: `/opt/tomcat/webapps/ace1`
+   * `DEPLOYMENT_URI`: If you modified the base name for this installation, change this value to reflect that, for example: `/ace`
+   * `BASE_DIR`: the base directory of your OpenAM deployment. If you modified the base name for this installation, change this value to reflect that, for example: `/opt/tomcat/webapps/ace`
    * `ADMIN_PWD`: 8 characters minimum.
    * `AMLDAPUSERPASSWRD`: 8 characters minimum.
    * `DIRECTORY_SERVER`: *You must update this vaue.* OpenAM FQDN, for example, `myopenam.xyz.company.com`
@@ -421,7 +421,7 @@ The NGINX route `/ace` **must match** the base name `ace` in this installation.
 
 After updating the NGINX configuration and restarting NGINX. Assuming the public FQDN of the NGINX server is `portal.domain.com`, open a web browser and navigate to:
 
-`https://portal.domain.com/ace1`
+`https://portal.domain.com/ace`
 
 **This completes the OpenAM installation and configuration.** :checkered_flag: :trophy:
 
@@ -924,11 +924,11 @@ Running the `oam_installer.py` script results in an error that says:
 
 ##### Previous OpenAM exists
 
-This error could be caused if OpenAM was previously installed. Look in the home folder of a user that installed OpenAM previously. If you find a directory named `.openamcfg`, rename the directory and rerun the `oam_installer.py`.  See the installation log file `/opt/tomcat/webapps/ace1/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors.
+This error could be caused if OpenAM was previously installed. Look in the home folder of a user that installed OpenAM previously. If you find a directory named `.openamcfg`, delete it and its contents. Then follow the [Reinstallation of OpenAM (optional)](#Reinstallation-of-OpenAM-(optional)) instructions above. Also see the installation log file `/opt/tomcat/webapps/ace/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors.
 
 ##### A tomcat users already exists
 
-Another cause of this error is existence of a `tomcat` user from a previous installation.  See the installation log file `/opt/tomcat/webapps/ace1/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors. Delete that `tomcat` user and the `tomcat` folder and try again:
+Another cause of this error is existence of a `tomcat` user from a previous installation.  See the installation log file `/opt/tomcat/webapps/ace/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors. Delete that `tomcat` user and the `tomcat` folder and try again:
 
 ```bash
 $  userdel -r tomcat
@@ -938,7 +938,7 @@ $  rm -rf /opt/tomcat
 
 ##### Low disk space
 
-Low disk space will prevent OpenAM from deploying. Make sure the disk has sufficient disk space to run OpenAM. See the installation log file `/opt/tomcat/webapps/ace1/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors.
+Low disk space will prevent OpenAM from deploying. Make sure the disk has sufficient disk space to run OpenAM. See the installation log file `/opt/tomcat/webapps/ace/install.log` and the tomcat log files in  `/opt/tomcat/logs` for errors.
 
 ---
 
@@ -1043,7 +1043,7 @@ Configure the successful login URLs for agents and managers. See the _Configure 
 During OpenAM configuration, executing `ssoadm` causes the following error:
 
 ```bash
-$  ./ssoadm list-servers -u amadmin -f pwd.txt
+#  ./ssoadm list-servers -u amadmin -f pwd.txt
 
 Logging configuration class "com.sun.identity.log.s1is.LogConfigReader" failed
 com.sun.identity.security.AMSecurityPropertiesException: AdminTokenAction: FATAL ERROR: Cannot obtain Application SSO token.
@@ -1052,5 +1052,95 @@ com.sun.identity.security.AMSecurityPropertiesException: AdminTokenAction: FATAL
 #### Solution 14
 
 Resolution: it is likely that the certificates in `/root/iam/ssl/` are expired or invalid. Make sure `cert.pem` and `key.pem` are valid, not expired, and have appropriate permissions.
+
+---
+
+#### Problem 15
+
+During OpenAM configuration, executing `ssoadm` causes the following error:
+
+```bash
+# ./ssoadm list-servers -u amadmin -f pwd.txt
+
+https://myopenam.xyz.company.com:8443/ace
+Exception in thread "SystemTimer" java.lang.Error: java.lang.ExceptionInInitializerError
+    at com.sun.identity.common.TimerPool$WorkerThread.run(TimerPool.java:542)
+Caused by: java.lang.ExceptionInInitializerError
+    at com.sun.identity.idm.IdRepoListener.getChangedIds(IdRepoListener.java:278)
+    at com.sun.identity.idm.IdRepoListener.objectChanged(IdRepoListener.java:174)
+    at com.sun.identity.idm.remote.IdRemoteEventListener.sendIdRepoNotification(IdRemoteEventListener.java:315)
+    at com.sun.identity.idm.remote.IdRemoteEventListener$NotificationRunnable.run(IdRemoteEventListener.java:398)
+    at com.sun.identity.common.TimerPool$WorkerThread.run(TimerPool.java:434)
+Caused by: java.lang.IllegalStateException: CachedConnectionPool is already closed
+    at org.forgerock.opendj.ldap.CachedConnectionPool.getConnectionAsync(CachedConnectionPool.java:802)
+    at org.forgerock.opendj.ldap.CachedConnectionPool.getConnection(CachedConnectionPool.java:789)
+    at com.sun.identity.sm.ldap.SMDataLayer.getConnection(SMDataLayer.java:107)
+    at com.sun.identity.sm.ldap.SMSLdapObject.getConnection(SMSLdapObject.java:574)
+    at com.sun.identity.sm.ldap.SMSLdapObject.read(SMSLdapObject.java:274)
+    at com.sun.identity.sm.SMSEntry.read(SMSEntry.java:699)
+    at com.sun.identity.sm.SMSEntry.read(SMSEntry.java:676)
+    at com.sun.identity.sm.SMSEntry.<init>(SMSEntry.java:469)
+    at com.sun.identity.sm.CachedSMSEntry.getInstance(CachedSMSEntry.java:383)
+    at com.sun.identity.sm.ServiceConfigImpl.checkAndUpdatePermission(ServiceConfigImpl.java:646)
+    at com.sun.identity.sm.ServiceConfigImpl.getInstance(ServiceConfigImpl.java:529)
+    at com.sun.identity.sm.ServiceConfigImpl.getSubConfig(ServiceConfigImpl.java:231)
+    at com.sun.identity.sm.ServiceConfig.getSubConfig(ServiceConfig.java:302)
+    at com.sun.identity.idm.IdUtils.initialize(IdUtils.java:140)
+    at com.sun.identity.idm.IdUtils.<clinit>(IdUtils.java:116)
+    ... 5 more
+#
+```
+
+#### Solution 15
+
+Resolution: you probably issued the command too soon. The server was not ready. Wait `30` seconds and execute the command again.
+
+---
+
+#### Problem 16
+
+Running the `ssoadm` tool causes Java exceptions...
+
+```bash
+[root@qaauth bin]# ./ssoadm set-attr-defs -s validationService -t organization -u amadmin -f pwd.txt -a openam-auth-valid-goto-resources="https://dev3demo.task3acrdemo.com/*" openam-auth-valid-goto-resources="https://dev3demo.task3acrdemo.com/*?*"
+
+Schema attribute defaults were set.
+Exception in thread "SystemTimer" java.lang.Error: java.lang.ExceptionInInitializerError
+    at com.sun.identity.common.TimerPool$WorkerThread.run(TimerPool.java:542)
+Caused by: java.lang.ExceptionInInitializerError
+    at com.sun.identity.idm.IdRepoListener.getChangedIds(IdRepoListener.java:278)
+    at com.sun.identity.idm.IdRepoListener.objectChanged(IdRepoListener.java:174)
+    at com.sun.identity.idm.remote.IdRemoteEventListener.sendIdRepoNotification(IdRemoteEventListener.java:315)
+    at com.sun.identity.idm.remote.IdRemoteEventListener$NotificationRunnable.run(IdRemoteEventListener.java:398)
+    at com.sun.identity.common.TimerPool$WorkerThread.run(TimerPool.java:434)
+Caused by: java.lang.IllegalStateException: CachedConnectionPool is already closed
+...
+```
+
+#### Solution 16
+
+The `ssoadm` tool/server may not be ready. Wait a minute or two, then try it again.
+
+---
+
+---
+
+#### Problem 17
+
+When navigating to NGINX to reach the OpenAM server, the following error is seen in the browser:
+
+```bash
+An error occurred.
+Sorry, the page you are looking for is currently unavailable.
+Please try again later.
+
+If you are the system administrator of this resource then you should check the error log for details.
+
+Faithfully yours, nginx.
+```
+
+#### Solution 17
+
+Make sure nginx has the correct FQDN and PORT NUMBER for the OpenAM server. Make sure nginx server can ping the private IP address of the OpenAM server. Make sure the nginx server's /etc/hosts file has an entry for the private IP address of the OpenAM server.
 
 ---
