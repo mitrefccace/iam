@@ -120,6 +120,7 @@ Where...
 1. Download the OpenAM 13.0 zip file:
 
     * [OpenAM-13.0.0.zip](https://backstage.forgerock.com/downloads/get/familyId:am/productId:openam/minorVersion:13/version:13.0.0/releaseType:full/distribution:zip). You will have to create an account and log in to download the file.
+    * Or get it from GitHub: `wget --no-check-certificate https://github.com/OpenIdentityPlatform/OpenAM/releases/download/13.0.0/OpenAM-13.0.0.zip`
     * FTP the file to the `/root` folder on the Open AM server. Make sure `root` has full permissions on the file.
     * Unzip the file: `unzip OpenAM-13.0.0.zip`. This will create the `openam` folder.
 
@@ -365,13 +366,38 @@ With OpenAM/Tomcat up and running...
     $  python create_users.py  # this will add agents one by one
     ```
 
-1. Security requirement - restrict GOTO URLs in OpenAM. This prevents a URL redirect to a different web page. Assuming the public FQDN of the NGINX server is `portal.domain.com`:
+1. Security requirement (optional) - restrict GOTO URLs in OpenAM. This prevents a URL redirect to a different web page. Assuming the public FQDN of the NGINX server is `portal.domain.com`:
 
     ```bash
     $  cd /root/iam/config/oam/SSOAdminTools-13.0.0/ace/bin
     $  ./ssoadm set-attr-defs -s validationService -t organization -u amadmin -f pwd.txt -a openam-auth-valid-goto-resources="https://portal.domain.com/*" openam-auth-valid-goto-resources="https://portal.domain.com/*?*"
     $
     ```
+
+1. Security requirement (optional) - custom HTML error page. This shows an internal custom HTML page if a page is not found:
+
+    * Log in as root
+    * Copy the `html/notfound.html` file to `/opt/tomcat/webapps/ROOT/notfound.html`
+    * Edit `/opt/tomcat/conf/web.xml`. Add the following code snippet right after the `welcome-file-list` group:
+
+    ```xml
+    <error-page>
+    <error-code>404</error-code>
+    <location>/notfound.html</location>
+    </error-page>
+
+    <error-page>
+    <error-code>403</error-code>
+    <location>/notfound.html</location>
+    </error-page>
+
+    <error-page>
+    <error-code>500</error-code>
+    <location>/notfound.html</location>
+    </error-page>
+    ```
+
+    * Restart OpenAM
 
 1. Session timeouts - if you need to change the maximum session and idle timeouts:
 
@@ -1144,3 +1170,14 @@ Faithfully yours, nginx.
 Make sure nginx has the correct FQDN and PORT NUMBER for the OpenAM server. Make sure nginx server can ping the private IP address of the OpenAM server. Make sure the nginx server's /etc/hosts file has an entry for the private IP address of the OpenAM server.
 
 ---
+
+#### Problem 18
+
+Access error when accessing OpenAM or ACE Direct through the browser. You may see a double URL in the address bar.
+
+#### Solution 18
+
+Make sure a firewall is not blocking incoming access to the OpenAM port (e.g., `8443`). For example, disable `firewalld` on the OpenAM server or add a rule to allow incoming connections to port `8443`.
+
+---
+

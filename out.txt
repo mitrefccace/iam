@@ -1,0 +1,14 @@
+#### Problem 10
+
+Access error when accessing OpenAM or ACE Direct through the browser. You may see a web page that says `UNABLE TO LOGIN TO OPENAM`. You may receive an NGINX error page `nginx error! - The page you are looking for is temporarily unavailable. Please try again later.`
+
+#### Solution 10
+
+Check if your original installation certs in `/root/iam/ssl` have expired:
+
+```bash
+$  cd /root/iam/ssl
+$    # note the expiration date of this command. if expire, both cert.pem and key.pem must be updated
+$  openssl x509 -enddate -noout -in cert.pem
+$
+```
